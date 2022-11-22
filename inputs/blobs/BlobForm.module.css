@@ -1,0 +1,42 @@
+.root {
+  width: 100%;
+  height: 100%;
+  border-radius: 20px;
+  background: var(--mechanic-dust-gray);
+  font-family: var(--mechanic-input-font);
+  padding: 1em;
+  display: flex;
+  flex-direction: row;
+}
+
+.setupSection, .loadingSection {
+  flex: 1 0 40%;
+  display: flex;
+  flex-direction: column;
+}
+
+.setupSection {
+  margin-right: 20px;
+}
+
+.blobInput {
+  margin-bottom: 1em;
+  border-radius: 20px;
+  width: 100%;
+  border: 1px solid black;
+  resize: none;
+  padding: 10px;
+}
+
+.previews {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1em;
+}
+
+.colorSelectorContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 1em;
+}
