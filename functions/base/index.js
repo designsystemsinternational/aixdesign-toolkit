@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 
 export const handler = ({ inputs, mechanic }) => {
-  const { width, height, blobs } = inputs;
+  const { width, height, blobs, showPictures } = inputs;
 
   useEffect(() => {
     mechanic.done();
@@ -9,11 +9,25 @@ export const handler = ({ inputs, mechanic }) => {
 
   return (
     <svg width={width} height={height}>
-      {blobs.map(({ path, fill, viewBox, width, height }, index) => (
-        <svg key={index} width={width} height={height} viewBox={viewBox}>
-          <path d={path} fill={fill} />
-        </svg>
-      ))}
+      <rect width={width} height={height} fill="none" stroke="black" />
+      {blobs.map(({ path, fill, href, transform, x, y }, index) =>
+        !showPictures ? (
+          <path key={index} d={path} fill={fill} transform={transform} />
+        ) : (
+          <React.Fragment key={index}>
+            <defs>
+              <clipPath id={`clip-${index}`}>
+                <path d={path} />
+              </clipPath>
+            </defs>
+            <image
+              xlinkHref={href}
+              clipPath={`url(#clip-${index})`}
+              transform={transform}
+            />
+          </React.Fragment>
+        )
+      )}
     </svg>
   );
 };
@@ -21,6 +35,10 @@ export const handler = ({ inputs, mechanic }) => {
 export const inputs = {
   blobs: {
     type: "blobs"
+  },
+  showPictures: {
+    type: "boolean",
+    default: false
   },
   width: {
     type: "number",
@@ -43,5 +61,11 @@ export const settings = {
   hidePresets: true,
   hideScaleToFit: true,
   hideAutoRefresh: true,
+
+  // quick fix, issue with importing input style into function iframe
+  // to fix, we need to separate webpack configs and for iframes ignore
+  // css from inputs
+  // https://webpack.js.org/configuration/configuration-types/#exporting-multiple-configurations
+  // https://webpack.js.org/plugins/ignore-plugin/#root
   optimize: false
 };

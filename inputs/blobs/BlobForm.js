@@ -7,6 +7,14 @@ import { ColorSelector } from "./ColorSelector";
 
 import * as css from "./BlobForm.module.css";
 
+const toolkitHelperCode = `<a
+target="_blank"
+rel="noopener noreferrer"
+href="https://storage.googleapis.com/openimages/web/visualizer/index.html?type=segmentation"
+>
+Google Open Images Dataset
+</a>`;
+
 export const BlobForm = ({ onLoadBlob }) => {
   const [inputValue, setInputValue] = React.useState("");
   const [error, setError] = React.useState("");
@@ -41,15 +49,9 @@ body.appendChild(modalContainer);
         </p>
         <p>
           Then, go to{" "}
-          <a
-            target="_blank"
-            rel="noopener noreferrer"
-            href="https://storage.googleapis.com/openimages/web/visualizer/index.html?type=segmentation"
-          >
-            Google Open Images Dataset
-          </a>
-          , go through the roaster, click to preview the blob you want to add,
-          and while on preview mode click on the bookmark helper.
+          <span dangerouslySetInnerHTML={{ __html: toolkitHelperCode }} />, go
+          through the roaster, click to preview the blob you want to add, and
+          while on preview mode click on the bookmark helper.
         </p>
         <textarea
           className={css.blobInput}
@@ -65,8 +67,9 @@ body.appendChild(modalContainer);
               blobData = parseBlob(inputValue);
               setLoadedObject(blobData);
               setError("");
-            } catch {
+            } catch (e) {
               setError("Error loading blob!");
+              console.error(e);
             }
           }}
         >
@@ -78,11 +81,11 @@ body.appendChild(modalContainer);
           <>
             <h2>Preview</h2>
             <div className={css.previews}>
-              <svg viewBox={loadedObject.viewBox}>
+              <svg viewBox={loadedObject.svgData.viewBox}>
                 <image xlinkHref={loadedObject.href} />{" "}
                 <path d={loadedObject.path} fill={color} />
               </svg>
-              <svg viewBox={loadedObject.viewBox}>
+              <svg viewBox={loadedObject.svgData.viewBox}>
                 <defs>
                   <clipPath id="clip">
                     <path d={loadedObject.path} />
@@ -90,7 +93,7 @@ body.appendChild(modalContainer);
                 </defs>
                 <image xlinkHref={loadedObject.href} clipPath="url(#clip)" />
               </svg>
-              <svg viewBox={loadedObject.viewBox}>
+              <svg viewBox={loadedObject.svgData.viewBox}>
                 <path d={loadedObject.path} fill={color} />
               </svg>
             </div>

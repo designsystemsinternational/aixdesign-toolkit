@@ -9,7 +9,9 @@
 }
 
 .blobContainer {
-  margin-bottom: 2em;
+  margin-bottom: 1em;
+  height: 190px;
+  overflow-y: auto;
 }
 
 .blobElement {
