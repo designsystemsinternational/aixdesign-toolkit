@@ -14,22 +14,6 @@
   overflow-y: auto;
 }
 
-.blobElement {
-  display: flex;
-  align-items: center;
-  padding: 0.5em 0;
-}
-
-.blobElement + .blobElement {
-  border-top: 1px solid currentColor;
-}
-
-.blobSvg {
-  height: 60px;
-  margin-left: 2em;
-  border: 1px solid black;
-}
-
 .newBlob {
   border: 1px solid currentColor;
   padding: 0.2em 0.5em;
@@ -40,28 +24,4 @@
   justify-content: center;
   align-items: center;
   cursor: pointer;
-}
-
-.blobControl {
-  border: none;
-  padding: 0.2em 0.5em;
-  border-radius: var(--mechanic-input-height-half);
-  font-family: var(--mechanic-input-font);
-  background: transparent;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  stroke: black;
-  stroke-width: 1px;
-}
-
-.blobControl + .blobControl {
-  margin-left: 5px;
-}
-
-
-.blobControl:disabled {
-  stroke: #cccccc;
-  cursor: not-allowed;
 }

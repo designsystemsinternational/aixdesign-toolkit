@@ -1,4 +1,8 @@
 javascript: (function () {
+  const canCopyConClipboard = navigator?.clipboard?.writeText != null;
+
+  navigator.clipboard.writeText("HEY");
+
   const svgString = document.getElementById("viewer_svg").outerHTML;
 
   const modalContainer = document.createElement("div");
@@ -11,12 +15,20 @@ javascript: (function () {
 
   const dialog = document.createElement("div");
   dialog.style =
-    "position: absolute;inset: 30%; background: #ccc; display: flex; flex-direction: column; justify-content: center; align-items: center;";
+    "position: absolute;inset: 20%; background: #ccc; display: flex; flex-direction: column; justify-content: center; align-items: center; border-radius: 12px;";
   modalContainer.appendChild(dialog);
 
-  const parrafo = document.createElement("p");
-  parrafo.textContent =
+  let textContent =
     "Copy the text in the textarea below me and paste it in the toolkit!";
+
+  if (canCopyConClipboard) {
+    navigator.clipboard.writeText(svgString);
+    textContent =
+      "The following blob SVG data just got copied into your clipboard! Go paste it in the toolkit.";
+  }
+
+  const parrafo = document.createElement("p");
+  parrafo.textContent = textContent;
   dialog.appendChild(parrafo);
 
   const textarea = document.createElement("textarea");
@@ -30,6 +42,8 @@ javascript: (function () {
   };
 
   const closeButton = document.createElement("button");
+  closeButton.style = "margin: 1em";
+
   closeButton.addEventListener("click", closeModal);
   backdrop.addEventListener("click", closeModal);
 
