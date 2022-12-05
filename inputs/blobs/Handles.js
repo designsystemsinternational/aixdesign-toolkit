@@ -160,13 +160,19 @@ export const HandleContainer = ({
   width,
   height,
   offset,
+  blob,
   children,
   onUpdateBlob
 }) => {
   const [dragging, setDragging] = React.useState("");
   const [blobReference, setBlobReference] = React.useState(null);
+
+  const wrapperRef = React.useRef(null);
+
   return (
     <div
+      id="handler-wrapper"
+      ref={wrapperRef}
       style={{
         position: "absolute",
         top: offset.top,
@@ -176,6 +182,9 @@ export const HandleContainer = ({
         overflow: "hidden"
       }}
       onMouseDown={e => {
+        if (e.target.id.includes("handle")) {
+          setBlobReference({ ...blob });
+        }
         if (e.target.id === "handler-body") {
           setDragging("body");
         }
@@ -193,7 +202,6 @@ export const HandleContainer = ({
         }
         if (e.target.id === "handle-ne") {
           setDragging("resize-ne");
-          // setBlobReference({x0: })
         }
         if (e.target.id === "handle-se") {
           setDragging("resize-se");
@@ -250,14 +258,19 @@ export const HandleContainer = ({
           });
         else if (dragging === "resize-ne")
           onUpdateBlob(blob => {
-            // console.log({ x: e.nativeEvent.layerX, y: e.nativeEvent.layerY });
-            // console.log({ n: e });
-            // console.log(e.nativeEvent.originalTarget.getBoundingClientRect());
-            const height = blob.pathExtent.height * blob.scaleY;
-            const width = blob.pathExtent.width * blob.scaleX;
+            const { clientX, clientY } = e;
+            const parentRect = wrapperRef.current.getBoundingClientRect();
+            const x = clientX - parentRect.left;
+            const y = clientY - parentRect.top;
+
+            const height =
+              blobReference.pathExtent.height * blobReference.scaleY;
+            const width = blobReference.pathExtent.width * blobReference.scaleX;
+            const y0 = blobReference.y + blobReference.pathExtent.y0;
+            const x1 = blobReference.x + blobReference.pathExtent.x0 + width;
             const ratio = height / width;
-            const dy = -e.movementY;
-            const dx = e.movementX;
+            const dy = y0 - y;
+            const dx = x - x1;
             let newHeight = height;
             let newWidth = width;
             let diff = 0;
@@ -270,22 +283,43 @@ export const HandleContainer = ({
               newHeight = newWidth * ratio;
               diff = dx * ratio;
             }
-
-            const scaleY = newHeight / blob.pathExtent.height;
-            const scaleX = newWidth / blob.pathExtent.width;
+            const scaleY = newHeight / blobReference.pathExtent.height;
+            const scaleX = newWidth / blobReference.pathExtent.width;
             return {
-              y: blob.y - diff,
+              y: blobReference.y - diff,
               scaleY,
               scaleX
             };
           });
         else if (dragging === "resize-se")
           onUpdateBlob(blob => {
-            const newHeight =
-              blob.pathExtent.height * blob.scaleY + e.movementY;
-            const newWidth = blob.pathExtent.width * blob.scaleX + e.movementX;
-            const scaleY = newHeight / blob.pathExtent.height;
-            const scaleX = newWidth / blob.pathExtent.width;
+            const { clientX, clientY } = e;
+            const parentRect = wrapperRef.current.getBoundingClientRect();
+            const x = clientX - parentRect.left;
+            const y = clientY - parentRect.top;
+
+            const height =
+              blobReference.pathExtent.height * blobReference.scaleY;
+            const width = blobReference.pathExtent.width * blobReference.scaleX;
+            const y1 = blobReference.y + blobReference.pathExtent.y0 + height;
+            const x1 = blobReference.x + blobReference.pathExtent.x0 + width;
+            const ratio = height / width;
+            const dy = y - y1;
+            const dx = x - x1;
+            let newHeight = height;
+            let newWidth = width;
+            let diff = 0;
+            if (dy > dx) {
+              newHeight = height + dy;
+              newWidth = newHeight / ratio;
+              diff = dy;
+            } else if (dy < dx) {
+              newWidth = width + dx;
+              newHeight = newWidth * ratio;
+              diff = dx * ratio;
+            }
+            const scaleY = newHeight / blobReference.pathExtent.height;
+            const scaleX = newWidth / blobReference.pathExtent.width;
             return {
               scaleY,
               scaleX
@@ -293,27 +327,71 @@ export const HandleContainer = ({
           });
         else if (dragging === "resize-sw")
           onUpdateBlob(blob => {
-            const newHeight =
-              blob.pathExtent.height * blob.scaleY + e.movementY;
-            const newWidth = blob.pathExtent.width * blob.scaleX - e.movementX;
-            const scaleY = newHeight / blob.pathExtent.height;
-            const scaleX = newWidth / blob.pathExtent.width;
+            const { clientX, clientY } = e;
+            const parentRect = wrapperRef.current.getBoundingClientRect();
+            const x = clientX - parentRect.left;
+            const y = clientY - parentRect.top;
+
+            const height =
+              blobReference.pathExtent.height * blobReference.scaleY;
+            const width = blobReference.pathExtent.width * blobReference.scaleX;
+            const y1 = blobReference.y + blobReference.pathExtent.y0 + height;
+            const x0 = blobReference.x + blobReference.pathExtent.x0;
+            const ratio = height / width;
+            const dy = y - y1;
+            const dx = -(x - x0);
+            let newHeight = height;
+            let newWidth = width;
+            let diff = 0;
+            if (dy > dx) {
+              newHeight = height + dy;
+              newWidth = newHeight / ratio;
+              diff = dy;
+            } else if (dy < dx) {
+              newWidth = width + dx;
+              newHeight = newWidth * ratio;
+              diff = dx * ratio;
+            }
+            const scaleY = newHeight / blobReference.pathExtent.height;
+            const scaleX = newWidth / blobReference.pathExtent.width;
             return {
-              x: blob.x + e.movementX,
+              x: blobReference.x - diff,
               scaleY,
               scaleX
             };
           });
         else if (dragging === "resize-nw")
           onUpdateBlob(blob => {
-            const newHeight =
-              blob.pathExtent.height * blob.scaleY - e.movementY;
-            const newWidth = blob.pathExtent.width * blob.scaleX - e.movementX;
-            const scaleY = newHeight / blob.pathExtent.height;
-            const scaleX = newWidth / blob.pathExtent.width;
+            const { clientX, clientY } = e;
+            const parentRect = wrapperRef.current.getBoundingClientRect();
+            const x = clientX - parentRect.left;
+            const y = clientY - parentRect.top;
+
+            const height =
+              blobReference.pathExtent.height * blobReference.scaleY;
+            const width = blobReference.pathExtent.width * blobReference.scaleX;
+            const y0 = blobReference.y + blobReference.pathExtent.y0;
+            const x0 = blobReference.x + blobReference.pathExtent.x0;
+            const ratio = height / width;
+            const dy = -(y - y0);
+            const dx = -(x - x0);
+            let newHeight = height;
+            let newWidth = width;
+            let diff = 0;
+            if (dy > dx) {
+              newHeight = height + dy;
+              newWidth = newHeight / ratio;
+              diff = dy;
+            } else if (dy < dx) {
+              newWidth = width + dx;
+              newHeight = newWidth * ratio;
+              diff = dx * ratio;
+            }
+            const scaleY = newHeight / blobReference.pathExtent.height;
+            const scaleX = newWidth / blobReference.pathExtent.width;
             return {
-              x: blob.x + e.movementX,
-              y: blob.y + e.movementY,
+              x: blobReference.x - diff,
+              y: blobReference.y - diff,
               scaleY,
               scaleX
             };
@@ -334,6 +412,7 @@ export const HandleContainer = ({
       onMouseUp={e => {
         if (dragging) {
           setDragging("");
+          setBlobReference(null);
         }
       }}
     >

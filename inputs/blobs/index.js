@@ -118,14 +118,16 @@ export const Input = ({ name, values, onChange }) => {
                 width={width}
                 height={height}
                 offset={{ top: "1em", left: "1em" }}
+                blob={blobs[selected]}
                 onUpdateBlob={updateCallback => {
                   const blobsCopy = [...blobs];
                   let selectedBlobCopy = {
                     ...blobs[selected]
                   };
+                  const changes = updateCallback(selectedBlobCopy);
                   selectedBlobCopy = {
                     ...selectedBlobCopy,
-                    ...updateCallback(selectedBlobCopy)
+                    ...changes
                   };
                   updateBlobTransform(selectedBlobCopy);
                   blobsCopy[selected] = selectedBlobCopy;
