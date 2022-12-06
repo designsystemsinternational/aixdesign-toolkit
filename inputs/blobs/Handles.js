@@ -14,18 +14,22 @@ export const updateBlobTransform = blob => {
 };
 
 const handleSize = 7;
+const rotationHandleSize = 20;
 const halfHandleSize = Math.floor(handleSize / 2);
+const halfRotationHandleSize = Math.floor(rotationHandleSize / 2);
 
-const debug = false;
+const debug = true;
 
 export const Handles = ({ blob }) => {
   if (blob == null) return null;
 
+  const rotate = blob.rotate;
   const x0 = blob.pathExtent.x0 + blob.x;
   const y0 = blob.pathExtent.y0 + blob.y;
   const width = blob.scaleX * blob.pathExtent.width;
   const height = blob.scaleY * blob.pathExtent.height;
 
+  console.log({ rotate });
   return (
     <>
       <div
@@ -37,7 +41,8 @@ export const Handles = ({ blob }) => {
           top: y0,
           height: height,
           width: width,
-          cursor: "move"
+          cursor: "move",
+          transform: `rotate(${rotate}deg)`
         }}
       />
       <div
@@ -49,7 +54,9 @@ export const Handles = ({ blob }) => {
           top: y0 - halfHandleSize,
           height: handleSize,
           width: width,
-          cursor: "ns-resize"
+          cursor: "ns-resize",
+          transform: `rotate(${rotate}deg)`,
+          transformOrigin: `${width / 2}px ${halfHandleSize + height / 2}px`
         }}
       />
       <div
@@ -61,25 +68,29 @@ export const Handles = ({ blob }) => {
           top: y0,
           height: height,
           width: handleSize,
-          cursor: "ew-resize"
+          cursor: "ew-resize",
+          transform: `rotate(${rotate}deg)`,
+          transformOrigin: `${-width / 2 + (halfHandleSize + 1)}px ${
+            height / 2
+          }px`
         }}
       />
-      {/* <div
+      <div
         id="handle-ne-rot"
         style={{
           position: "absolute",
-          // border: "1px dashed black",
-          left:
-            blob.pathExtent.x0 +
-            blob.x +
-            width -
-            4,
-          top: y0 - 1handleSize,
-          height: 20,
-          width: 20,
-          cursor: "nwse-resize"
+          border: debug ? "1px dashed black" : "",
+          left: x0 + width - (halfHandleSize + 1),
+          top: y0 - rotationHandleSize + halfHandleSize + 1,
+          height: rotationHandleSize,
+          width: rotationHandleSize,
+          cursor: "nwse-resize",
+          transform: `rotate(${rotate}deg)`,
+          transformOrigin: `${-width / 2 + (halfHandleSize + 1)}px ${
+            height / 2 + rotationHandleSize - (halfHandleSize + 1)
+          }px`
         }}
-      /> */}
+      />
       <div
         id="handle-ne"
         className={css.handle}
@@ -89,7 +100,11 @@ export const Handles = ({ blob }) => {
           top: y0 - halfHandleSize,
           height: handleSize,
           width: handleSize,
-          cursor: "nesw-resize"
+          cursor: "nesw-resize",
+          transform: `rotate(${rotate}deg)`,
+          transformOrigin: `${-width / 2 + (halfHandleSize + 1)}px ${
+            height / 2 + halfHandleSize
+          }px`
         }}
       />
       <div
@@ -101,7 +116,27 @@ export const Handles = ({ blob }) => {
           top: y0 + height - (halfHandleSize + 1),
           height: handleSize,
           width: width,
-          cursor: "ns-resize"
+          cursor: "ns-resize",
+          transform: `rotate(${rotate}deg)`,
+          transformOrigin: `${width / 2}px ${
+            -height / 2 + (halfHandleSize + 1)
+          }px`
+        }}
+      />
+      <div
+        id="handle-se-rot"
+        style={{
+          position: "absolute",
+          border: debug ? "1px dashed black" : "",
+          left: x0 + width - (halfHandleSize + 1),
+          top: y0 + height - (halfHandleSize + 1),
+          height: rotationHandleSize,
+          width: rotationHandleSize,
+          cursor: "nesw-resize",
+          transform: `rotate(${rotate}deg)`,
+          transformOrigin: `${-width / 2 + (halfHandleSize + 1)}px ${
+            -height / 2 + (halfHandleSize + 1)
+          }px`
         }}
       />
       <div
@@ -113,7 +148,11 @@ export const Handles = ({ blob }) => {
           top: y0 + height - (halfHandleSize + 1),
           height: handleSize,
           width: handleSize,
-          cursor: "nwse-resize"
+          cursor: "nwse-resize",
+          transform: `rotate(${rotate}deg)`,
+          transformOrigin: `${-width / 2 + (halfHandleSize + 1)}px ${
+            -height / 2 + (halfHandleSize + 1)
+          }px`
         }}
       />
       <div
@@ -125,7 +164,25 @@ export const Handles = ({ blob }) => {
           top: y0,
           height: height,
           width: handleSize,
-          cursor: "ew-resize"
+          cursor: "ew-resize",
+          transform: `rotate(${rotate}deg)`,
+          transformOrigin: `${width / 2 + halfHandleSize}px ${height / 2}px`
+        }}
+      />
+      <div
+        id="handle-sw-rot"
+        style={{
+          position: "absolute",
+          border: debug ? "1px dashed black" : "",
+          left: x0 - rotationHandleSize + halfHandleSize + 1,
+          top: y0 + height - (halfHandleSize + 1),
+          height: rotationHandleSize,
+          width: rotationHandleSize,
+          cursor: "nwse-resize",
+          transform: `rotate(${rotate}deg)`,
+          transformOrigin: `${
+            width / 2 + rotationHandleSize - (halfHandleSize + 1)
+          }px ${-height / 2 + (halfHandleSize + 1)}px`
         }}
       />
       <div
@@ -137,7 +194,27 @@ export const Handles = ({ blob }) => {
           top: y0 + height - (halfHandleSize + 1),
           height: handleSize,
           width: handleSize,
-          cursor: "nesw-resize"
+          cursor: "nesw-resize",
+          transform: `rotate(${rotate}deg)`,
+          transformOrigin: `${width / 2 + halfHandleSize}px ${
+            -height / 2 + (halfHandleSize + 1)
+          }px`
+        }}
+      />
+      <div
+        id="handle-nw-rot"
+        style={{
+          position: "absolute",
+          border: debug ? "1px dashed black" : "",
+          left: x0 - rotationHandleSize + halfHandleSize + 1,
+          top: y0 - rotationHandleSize + halfHandleSize + 1,
+          height: rotationHandleSize,
+          width: rotationHandleSize,
+          cursor: "nesw-resize",
+          transform: `rotate(${rotate}deg)`,
+          transformOrigin: `${
+            width / 2 + rotationHandleSize - (halfHandleSize + 1)
+          }px ${height / 2 + rotationHandleSize - (halfHandleSize + 1)}px`
         }}
       />
       <div
@@ -149,7 +226,11 @@ export const Handles = ({ blob }) => {
           top: y0 - halfHandleSize,
           height: handleSize,
           width: handleSize,
-          cursor: "nwse-resize"
+          cursor: "nwse-resize",
+          transform: `rotate(${rotate}deg)`,
+          transformOrigin: `${width / 2 + halfHandleSize}px ${
+            height / 2 + halfHandleSize
+          }px`
         }}
       />
     </>
@@ -166,6 +247,8 @@ export const HandleContainer = ({
 }) => {
   const [dragging, setDragging] = React.useState("");
   const [blobReference, setBlobReference] = React.useState(null);
+  const [rotationInitialCoordinate, setRotationInitialCoordinate] =
+    React.useState(null);
 
   const wrapperRef = React.useRef(null);
 
@@ -184,6 +267,13 @@ export const HandleContainer = ({
       onMouseDown={e => {
         if (e.target.id.includes("handle")) {
           setBlobReference({ ...blob });
+        }
+        if (e.target.id.includes("rot")) {
+          const { clientX, clientY } = e;
+          const parentRect = wrapperRef.current.getBoundingClientRect();
+          const x = clientX - parentRect.left;
+          const y = clientY - parentRect.top;
+          setRotationInitialCoordinate({ x, y });
         }
         if (e.target.id === "handler-body") {
           setDragging("body");
@@ -212,9 +302,18 @@ export const HandleContainer = ({
         if (e.target.id === "handle-nw") {
           setDragging("resize-nw");
         }
-        // if (e.target.id === "handle-ne-rot") {
-        //   setDragging("rotate-ne");
-        // }
+        if (e.target.id === "handle-ne-rot") {
+          setDragging("rotate-ne");
+        }
+        if (e.target.id === "handle-nw-rot") {
+          setDragging("rotate-nw");
+        }
+        if (e.target.id === "handle-se-rot") {
+          setDragging("rotate-se");
+        }
+        if (e.target.id === "handle-sw-rot") {
+          setDragging("rotate-sw");
+        }
       }}
       onMouseMove={e => {
         if (dragging === "body")
@@ -274,11 +373,11 @@ export const HandleContainer = ({
             let newHeight = height;
             let newWidth = width;
             let diff = 0;
-            if (dy > dx) {
+            if (dy > dx * ratio) {
               newHeight = height + dy;
               newWidth = newHeight / ratio;
               diff = dy;
-            } else if (dy < dx) {
+            } else {
               newWidth = width + dx;
               newHeight = newWidth * ratio;
               diff = dx * ratio;
@@ -309,15 +408,16 @@ export const HandleContainer = ({
             let newHeight = height;
             let newWidth = width;
             let diff = 0;
-            if (dy > dx) {
+            if (dy > dx * ratio) {
               newHeight = height + dy;
               newWidth = newHeight / ratio;
               diff = dy;
-            } else if (dy < dx) {
+            } else {
               newWidth = width + dx;
               newHeight = newWidth * ratio;
               diff = dx * ratio;
             }
+            // console.log({ newHeight, newWidth, dy, dx, diff });
             const scaleY = newHeight / blobReference.pathExtent.height;
             const scaleX = newWidth / blobReference.pathExtent.width;
             return {
@@ -343,14 +443,14 @@ export const HandleContainer = ({
             let newHeight = height;
             let newWidth = width;
             let diff = 0;
-            if (dy > dx) {
+            if (dy > dx * ratio) {
               newHeight = height + dy;
               newWidth = newHeight / ratio;
-              diff = dy;
-            } else if (dy < dx) {
+              diff = dy / ratio;
+            } else {
               newWidth = width + dx;
               newHeight = newWidth * ratio;
-              diff = dx * ratio;
+              diff = dx;
             }
             const scaleY = newHeight / blobReference.pathExtent.height;
             const scaleX = newWidth / blobReference.pathExtent.width;
@@ -377,42 +477,68 @@ export const HandleContainer = ({
             const dx = -(x - x0);
             let newHeight = height;
             let newWidth = width;
-            let diff = 0;
-            if (dy > dx) {
+            let diffX = 0;
+            let diffY = 0;
+            if (dy > dx * ratio) {
               newHeight = height + dy;
               newWidth = newHeight / ratio;
-              diff = dy;
-            } else if (dy < dx) {
+              diffX = dy / ratio;
+              diffY = dy;
+            } else {
               newWidth = width + dx;
               newHeight = newWidth * ratio;
-              diff = dx * ratio;
+              diffX = dx;
+              diffY = dx * ratio;
             }
             const scaleY = newHeight / blobReference.pathExtent.height;
             const scaleX = newWidth / blobReference.pathExtent.width;
             return {
-              x: blobReference.x - diff,
-              y: blobReference.y - diff,
+              x: blobReference.x - diffX,
+              y: blobReference.y - diffY,
               scaleY,
               scaleX
             };
           });
+        else if (dragging.includes("rotate"))
+          onUpdateBlob(blob => {
+            const { clientX, clientY } = e;
+            const parentRect = wrapperRef.current.getBoundingClientRect();
+            const x = clientX - parentRect.left;
+            const y = clientY - parentRect.top;
 
-        // // else if (dragging === "rotate-ne")
-        // //
-        // //   const newHeight =
-        // //     newBlob.pathExtent.height * newBlob.scaleY - e.movementY;
-        // //   const newWidth =
-        // //     newBlob.pathExtent.width * newBlob.scaleX - e.movementX;
-        // //   const rotation = newBlob.rotate + 10;
-        // //   newBlob = {
-        // //     rotate: rotation
-        // //   };
-        // //
+            const width = blobReference.pathExtent.width * blobReference.scaleX;
+            const height =
+              blobReference.pathExtent.height * blobReference.scaleY;
+            const cy =
+              blobReference.y + blobReference.pathExtent.y0 + height / 2;
+            const cx =
+              blobReference.x + blobReference.pathExtent.x0 + width / 2;
+
+            const cdy = -(rotationInitialCoordinate.y - cy);
+            const cdx = rotationInitialCoordinate.x - cx;
+            const referenceAngle = (Math.atan(cdy / cdx) * 180) / Math.PI;
+
+            const dy = -(y - cy);
+            const dx = x - cx;
+            // console.log({ dx, dy });
+            const angle =
+              ((dx > 0 ? Math.atan(dy / dx) : Math.atan(dy / dx) + Math.PI) *
+                180) /
+              Math.PI;
+            const dAngle = referenceAngle - angle;
+
+            const rotation = blobReference.rotate + dAngle;
+
+            return {
+              rotate: rotation
+            };
+          });
       }}
       onMouseUp={e => {
         if (dragging) {
           setDragging("");
           setBlobReference(null);
+          setRotationInitialCoordinate(null);
         }
       }}
     >
