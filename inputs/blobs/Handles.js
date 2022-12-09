@@ -13,6 +13,15 @@ export const updateBlobTransform = blob => {
   }) scale(${scaleX} ${scaleY}) translate(${-pathExtent.x0} ${-pathExtent.y0})`;
 };
 
+function rotate(cx, cy, x, y, angle) {
+  var radians = (Math.PI / 180) * -angle,
+    cos = Math.cos(radians),
+    sin = Math.sin(radians),
+    nx = cos * (x - cx) + sin * (y - cy) + cx,
+    ny = cos * (y - cy) - sin * (x - cx) + cy;
+  return [nx, ny];
+}
+
 const handleSize = 7;
 const rotationHandleSize = 20;
 const halfHandleSize = Math.floor(handleSize / 2);
@@ -323,36 +332,212 @@ export const HandleContainer = ({
           }));
         else if (dragging === "resize-n")
           onUpdateBlob(blob => {
-            const newHeight =
-              blob.pathExtent.height * blob.scaleY - e.movementY;
-            const scaleY = newHeight / blob.pathExtent.height;
+            const { clientX, clientY } = e;
+            const parentRect = wrapperRef.current.getBoundingClientRect();
+            const x = clientX - parentRect.left;
+            const y = clientY - parentRect.top;
+
+            const width = blobReference.pathExtent.width * blobReference.scaleX;
+            const height =
+              blobReference.pathExtent.height * blobReference.scaleY;
+
+            const cy =
+              blobReference.y + blobReference.pathExtent.y0 + height / 2;
+            const cx =
+              blobReference.x + blobReference.pathExtent.x0 + width / 2;
+
+            const x0 = blobReference.x + blobReference.pathExtent.x0;
+            const y0 = blobReference.y + blobReference.pathExtent.y0;
+            const x1 = x0 + width;
+            const y1 = y0 + height;
+
+            const [rotX, rotY] = rotate(cx, cy, x, y, -blobReference.rotate);
+
+            const dh = y0 - rotY;
+            const newHeight = height + dh;
+            const scaleY = newHeight / blobReference.pathExtent.height;
+
+            const [ncx, ncy] = rotate(
+              cx,
+              cy,
+              cx,
+              y1 - newHeight / 2,
+              blobReference.rotate
+            );
+
+            const [rotX0, rotY0] = rotate(
+              cx,
+              cy,
+              x0,
+              y1 - newHeight,
+              blobReference.rotate
+            );
+
+            const [nx0, ny0] = rotate(
+              ncx,
+              ncy,
+              rotX0,
+              rotY0,
+              -blobReference.rotate
+            );
+
             return {
-              y: blob.y + e.movementY,
+              x: nx0,
+              y: ny0,
               scaleY
             };
           });
         else if (dragging === "resize-s")
           onUpdateBlob(blob => {
-            const newHeight =
-              blob.pathExtent.height * blob.scaleY + e.movementY;
-            const scaleY = newHeight / blob.pathExtent.height;
+            const { clientX, clientY } = e;
+            const parentRect = wrapperRef.current.getBoundingClientRect();
+            const x = clientX - parentRect.left;
+            const y = clientY - parentRect.top;
+
+            const width = blobReference.pathExtent.width * blobReference.scaleX;
+            const height =
+              blobReference.pathExtent.height * blobReference.scaleY;
+
+            const cy =
+              blobReference.y + blobReference.pathExtent.y0 + height / 2;
+            const cx =
+              blobReference.x + blobReference.pathExtent.x0 + width / 2;
+
+            const x0 = blobReference.x + blobReference.pathExtent.x0;
+            const y0 = blobReference.y + blobReference.pathExtent.y0;
+            const y1 = y0 + height;
+
+            const [rotX, rotY] = rotate(cx, cy, x, y, -blobReference.rotate);
+
+            const dh = rotY - y1;
+            const newHeight = height + dh;
+            const scaleY = newHeight / blobReference.pathExtent.height;
+
+            const [ncx, ncy] = rotate(
+              cx,
+              cy,
+              cx,
+              y0 + newHeight / 2,
+              blobReference.rotate
+            );
+            const [rotX0, rotY0] = rotate(cx, cy, x0, y0, blobReference.rotate);
+
+            const [nx0, ny0] = rotate(
+              ncx,
+              ncy,
+              rotX0,
+              rotY0,
+              -blobReference.rotate
+            );
+
             return {
+              x: nx0,
+              y: ny0,
               scaleY
             };
           });
         else if (dragging === "resize-w")
           onUpdateBlob(blob => {
-            const newWidth = blob.pathExtent.width * blob.scaleX - e.movementX;
+            const { clientX, clientY } = e;
+            const parentRect = wrapperRef.current.getBoundingClientRect();
+            const x = clientX - parentRect.left;
+            const y = clientY - parentRect.top;
+
+            const width = blobReference.pathExtent.width * blobReference.scaleX;
+            const height =
+              blobReference.pathExtent.height * blobReference.scaleY;
+
+            const cy =
+              blobReference.y + blobReference.pathExtent.y0 + height / 2;
+            const cx =
+              blobReference.x + blobReference.pathExtent.x0 + width / 2;
+
+            const x0 = blobReference.x + blobReference.pathExtent.x0;
+            const y0 = blobReference.y + blobReference.pathExtent.y0;
+            const x1 = x0 + width;
+
+            const [rotX, rotY] = rotate(cx, cy, x, y, -blobReference.rotate);
+
+            const dw = x0 - rotX;
+            const newWidth = width + dw;
+            const scaleX = newWidth / blobReference.pathExtent.width;
+
+            const [ncx, ncy] = rotate(
+              cx,
+              cy,
+              x1 - newWidth / 2,
+              cy,
+              blobReference.rotate
+            );
+            const [rotX0, rotY0] = rotate(
+              cx,
+              cy,
+              x1 - newWidth,
+              y0,
+              blobReference.rotate
+            );
+
+            const [nx0, ny0] = rotate(
+              ncx,
+              ncy,
+              rotX0,
+              rotY0,
+              -blobReference.rotate
+            );
+
             return {
-              x: blob.x + e.movementX,
-              scaleX: newWidth / blob.pathExtent.width
+              x: nx0,
+              y: ny0,
+              scaleX
             };
           });
         else if (dragging === "resize-e")
           onUpdateBlob(blob => {
-            const newWidth = blob.pathExtent.width * blob.scaleX + e.movementX;
+            const { clientX, clientY } = e;
+            const parentRect = wrapperRef.current.getBoundingClientRect();
+            const x = clientX - parentRect.left;
+            const y = clientY - parentRect.top;
+
+            const width = blobReference.pathExtent.width * blobReference.scaleX;
+            const height =
+              blobReference.pathExtent.height * blobReference.scaleY;
+
+            const cy =
+              blobReference.y + blobReference.pathExtent.y0 + height / 2;
+            const cx =
+              blobReference.x + blobReference.pathExtent.x0 + width / 2;
+
+            const x0 = blobReference.x + blobReference.pathExtent.x0;
+            const y0 = blobReference.y + blobReference.pathExtent.y0;
+            const x1 = x0 + width;
+
+            const [rotX, rotY] = rotate(cx, cy, x, y, -blobReference.rotate);
+
+            const dw = rotX - x1;
+            const newWidth = width + dw;
+            const scaleX = newWidth / blobReference.pathExtent.width;
+
+            const [ncx, ncy] = rotate(
+              cx,
+              cy,
+              x0 + newWidth / 2,
+              cy,
+              blobReference.rotate
+            );
+            const [rotX0, rotY0] = rotate(cx, cy, x0, y0, blobReference.rotate);
+
+            const [nx0, ny0] = rotate(
+              ncx,
+              ncy,
+              rotX0,
+              rotY0,
+              -blobReference.rotate
+            );
+
             return {
-              scaleX: newWidth / blob.pathExtent.width
+              x: nx0,
+              y: ny0,
+              scaleX
             };
           });
         else if (dragging === "resize-ne")
