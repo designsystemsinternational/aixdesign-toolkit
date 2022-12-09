@@ -417,7 +417,6 @@ export const HandleContainer = ({
               newHeight = newWidth * ratio;
               diff = dx * ratio;
             }
-            // console.log({ newHeight, newWidth, dy, dx, diff });
             const scaleY = newHeight / blobReference.pathExtent.height;
             const scaleX = newWidth / blobReference.pathExtent.width;
             return {
@@ -516,11 +515,15 @@ export const HandleContainer = ({
 
             const cdy = -(rotationInitialCoordinate.y - cy);
             const cdx = rotationInitialCoordinate.x - cx;
-            const referenceAngle = (Math.atan(cdy / cdx) * 180) / Math.PI;
+            const referenceAngle =
+              ((cdx > 0
+                ? Math.atan(cdy / cdx)
+                : Math.atan(cdy / cdx) + Math.PI) *
+                180) /
+              Math.PI;
 
             const dy = -(y - cy);
             const dx = x - cx;
-            // console.log({ dx, dy });
             const angle =
               ((dx > 0 ? Math.atan(dy / dx) : Math.atan(dy / dx) + Math.PI) *
                 180) /
