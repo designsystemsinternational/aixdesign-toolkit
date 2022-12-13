@@ -27,7 +27,7 @@ const rotationHandleSize = 20;
 const halfHandleSize = Math.floor(handleSize / 2);
 const halfRotationHandleSize = Math.floor(rotationHandleSize / 2);
 
-const debug = true;
+const debug = false;
 
 export const Handles = ({ blob }) => {
   if (blob == null) return null;
@@ -38,7 +38,6 @@ export const Handles = ({ blob }) => {
   const width = blob.scaleX * blob.pathExtent.width;
   const height = blob.scaleY * blob.pathExtent.height;
 
-  console.log({ rotate });
   return (
     <>
       <div
@@ -86,8 +85,8 @@ export const Handles = ({ blob }) => {
       />
       <div
         id="handle-ne-rot"
+        className={css.handle}
         style={{
-          position: "absolute",
           border: debug ? "1px dashed black" : "",
           left: x0 + width - (halfHandleSize + 1),
           top: y0 - rotationHandleSize + halfHandleSize + 1,
@@ -134,8 +133,8 @@ export const Handles = ({ blob }) => {
       />
       <div
         id="handle-se-rot"
+        className={css.handle}
         style={{
-          position: "absolute",
           border: debug ? "1px dashed black" : "",
           left: x0 + width - (halfHandleSize + 1),
           top: y0 + height - (halfHandleSize + 1),
@@ -180,8 +179,8 @@ export const Handles = ({ blob }) => {
       />
       <div
         id="handle-sw-rot"
+        className={css.handle}
         style={{
-          position: "absolute",
           border: debug ? "1px dashed black" : "",
           left: x0 - rotationHandleSize + halfHandleSize + 1,
           top: y0 + height - (halfHandleSize + 1),
@@ -212,8 +211,8 @@ export const Handles = ({ blob }) => {
       />
       <div
         id="handle-nw-rot"
+        className={css.handle}
         style={{
-          position: "absolute",
           border: debug ? "1px dashed black" : "",
           left: x0 - rotationHandleSize + halfHandleSize + 1,
           top: y0 - rotationHandleSize + halfHandleSize + 1,
@@ -382,8 +381,8 @@ export const HandleContainer = ({
             );
 
             return {
-              x: nx0,
-              y: ny0,
+              x: nx0 - blobReference.pathExtent.x0,
+              y: ny0 - blobReference.pathExtent.y0,
               scaleY
             };
           });
@@ -431,8 +430,8 @@ export const HandleContainer = ({
             );
 
             return {
-              x: nx0,
-              y: ny0,
+              x: nx0 - blobReference.pathExtent.x0,
+              y: ny0 - blobReference.pathExtent.y0,
               scaleY
             };
           });
@@ -486,8 +485,8 @@ export const HandleContainer = ({
             );
 
             return {
-              x: nx0,
-              y: ny0,
+              x: nx0 - blobReference.pathExtent.x0,
+              y: ny0 - blobReference.pathExtent.y0,
               scaleX
             };
           });
@@ -535,8 +534,8 @@ export const HandleContainer = ({
             );
 
             return {
-              x: nx0,
-              y: ny0,
+              x: nx0 - blobReference.pathExtent.x0,
+              y: ny0 - blobReference.pathExtent.y0,
               scaleX
             };
           });
@@ -547,30 +546,63 @@ export const HandleContainer = ({
             const x = clientX - parentRect.left;
             const y = clientY - parentRect.top;
 
+            const width = blobReference.pathExtent.width * blobReference.scaleX;
             const height =
               blobReference.pathExtent.height * blobReference.scaleY;
-            const width = blobReference.pathExtent.width * blobReference.scaleX;
+            const cy =
+              blobReference.y + blobReference.pathExtent.y0 + height / 2;
+            const cx =
+              blobReference.x + blobReference.pathExtent.x0 + width / 2;
+            const x0 = blobReference.x + blobReference.pathExtent.x0;
             const y0 = blobReference.y + blobReference.pathExtent.y0;
-            const x1 = blobReference.x + blobReference.pathExtent.x0 + width;
+            const x1 = x0 + width;
+            const y1 = y0 + height;
             const ratio = height / width;
-            const dy = y0 - y;
-            const dx = x - x1;
+
+            const [rotX, rotY] = rotate(cx, cy, x, y, -blobReference.rotate);
+
+            const dy = y0 - rotY;
+            const dx = rotX - x1;
             let newHeight = height;
             let newWidth = width;
-            let diff = 0;
             if (dy > dx * ratio) {
               newHeight = height + dy;
               newWidth = newHeight / ratio;
-              diff = dy;
             } else {
               newWidth = width + dx;
               newHeight = newWidth * ratio;
-              diff = dx * ratio;
             }
+
             const scaleY = newHeight / blobReference.pathExtent.height;
             const scaleX = newWidth / blobReference.pathExtent.width;
+
+            const [ncx, ncy] = rotate(
+              cx,
+              cy,
+              x0 + newWidth / 2,
+              y1 - newHeight / 2,
+              blobReference.rotate
+            );
+
+            const [rotX0, rotY0] = rotate(
+              cx,
+              cy,
+              x0,
+              y1 - newHeight,
+              blobReference.rotate
+            );
+
+            const [nx0, ny0] = rotate(
+              ncx,
+              ncy,
+              rotX0,
+              rotY0,
+              -blobReference.rotate
+            );
+
             return {
-              y: blobReference.y - diff,
+              x: nx0 - blobReference.pathExtent.x0,
+              y: ny0 - blobReference.pathExtent.y0,
               scaleY,
               scaleX
             };
@@ -582,29 +614,57 @@ export const HandleContainer = ({
             const x = clientX - parentRect.left;
             const y = clientY - parentRect.top;
 
+            const width = blobReference.pathExtent.width * blobReference.scaleX;
             const height =
               blobReference.pathExtent.height * blobReference.scaleY;
-            const width = blobReference.pathExtent.width * blobReference.scaleX;
-            const y1 = blobReference.y + blobReference.pathExtent.y0 + height;
-            const x1 = blobReference.x + blobReference.pathExtent.x0 + width;
+            const cy =
+              blobReference.y + blobReference.pathExtent.y0 + height / 2;
+            const cx =
+              blobReference.x + blobReference.pathExtent.x0 + width / 2;
+            const x0 = blobReference.x + blobReference.pathExtent.x0;
+            const y0 = blobReference.y + blobReference.pathExtent.y0;
+            const x1 = x0 + width;
+            const y1 = y0 + height;
             const ratio = height / width;
-            const dy = y - y1;
-            const dx = x - x1;
+
+            const [rotX, rotY] = rotate(cx, cy, x, y, -blobReference.rotate);
+
+            const dy = rotY - y1;
+            const dx = rotX - x1;
             let newHeight = height;
             let newWidth = width;
-            let diff = 0;
             if (dy > dx * ratio) {
               newHeight = height + dy;
               newWidth = newHeight / ratio;
-              diff = dy;
             } else {
               newWidth = width + dx;
               newHeight = newWidth * ratio;
-              diff = dx * ratio;
             }
+
             const scaleY = newHeight / blobReference.pathExtent.height;
             const scaleX = newWidth / blobReference.pathExtent.width;
+
+            const [ncx, ncy] = rotate(
+              cx,
+              cy,
+              x0 + newWidth / 2,
+              y0 + newHeight / 2,
+              blobReference.rotate
+            );
+
+            const [rotX0, rotY0] = rotate(cx, cy, x0, y0, blobReference.rotate);
+
+            const [nx0, ny0] = rotate(
+              ncx,
+              ncy,
+              rotX0,
+              rotY0,
+              -blobReference.rotate
+            );
+
             return {
+              x: nx0 - blobReference.pathExtent.x0,
+              y: ny0 - blobReference.pathExtent.y0,
               scaleY,
               scaleX
             };
@@ -616,30 +676,63 @@ export const HandleContainer = ({
             const x = clientX - parentRect.left;
             const y = clientY - parentRect.top;
 
+            const width = blobReference.pathExtent.width * blobReference.scaleX;
             const height =
               blobReference.pathExtent.height * blobReference.scaleY;
-            const width = blobReference.pathExtent.width * blobReference.scaleX;
-            const y1 = blobReference.y + blobReference.pathExtent.y0 + height;
+            const cy =
+              blobReference.y + blobReference.pathExtent.y0 + height / 2;
+            const cx =
+              blobReference.x + blobReference.pathExtent.x0 + width / 2;
             const x0 = blobReference.x + blobReference.pathExtent.x0;
+            const y0 = blobReference.y + blobReference.pathExtent.y0;
+            const x1 = x0 + width;
+            const y1 = y0 + height;
             const ratio = height / width;
-            const dy = y - y1;
-            const dx = -(x - x0);
+
+            const [rotX, rotY] = rotate(cx, cy, x, y, -blobReference.rotate);
+
+            const dy = rotY - y1;
+            const dx = x0 - rotX;
             let newHeight = height;
             let newWidth = width;
-            let diff = 0;
             if (dy > dx * ratio) {
               newHeight = height + dy;
               newWidth = newHeight / ratio;
-              diff = dy / ratio;
             } else {
               newWidth = width + dx;
               newHeight = newWidth * ratio;
-              diff = dx;
             }
+
             const scaleY = newHeight / blobReference.pathExtent.height;
             const scaleX = newWidth / blobReference.pathExtent.width;
+
+            const [ncx, ncy] = rotate(
+              cx,
+              cy,
+              x1 - newWidth / 2,
+              y0 + newHeight / 2,
+              blobReference.rotate
+            );
+
+            const [rotX0, rotY0] = rotate(
+              cx,
+              cy,
+              x1 - newWidth,
+              y0,
+              blobReference.rotate
+            );
+
+            const [nx0, ny0] = rotate(
+              ncx,
+              ncy,
+              rotX0,
+              rotY0,
+              -blobReference.rotate
+            );
+
             return {
-              x: blobReference.x - diff,
+              x: nx0 - blobReference.pathExtent.x0,
+              y: ny0 - blobReference.pathExtent.y0,
               scaleY,
               scaleX
             };
@@ -651,34 +744,63 @@ export const HandleContainer = ({
             const x = clientX - parentRect.left;
             const y = clientY - parentRect.top;
 
+            const width = blobReference.pathExtent.width * blobReference.scaleX;
             const height =
               blobReference.pathExtent.height * blobReference.scaleY;
-            const width = blobReference.pathExtent.width * blobReference.scaleX;
-            const y0 = blobReference.y + blobReference.pathExtent.y0;
+            const cy =
+              blobReference.y + blobReference.pathExtent.y0 + height / 2;
+            const cx =
+              blobReference.x + blobReference.pathExtent.x0 + width / 2;
             const x0 = blobReference.x + blobReference.pathExtent.x0;
+            const y0 = blobReference.y + blobReference.pathExtent.y0;
+            const x1 = x0 + width;
+            const y1 = y0 + height;
             const ratio = height / width;
-            const dy = -(y - y0);
-            const dx = -(x - x0);
+
+            const [rotX, rotY] = rotate(cx, cy, x, y, -blobReference.rotate);
+
+            const dy = -(rotY - y0);
+            const dx = -(rotX - x0);
             let newHeight = height;
             let newWidth = width;
-            let diffX = 0;
-            let diffY = 0;
             if (dy > dx * ratio) {
               newHeight = height + dy;
               newWidth = newHeight / ratio;
-              diffX = dy / ratio;
-              diffY = dy;
             } else {
               newWidth = width + dx;
               newHeight = newWidth * ratio;
-              diffX = dx;
-              diffY = dx * ratio;
             }
+
             const scaleY = newHeight / blobReference.pathExtent.height;
             const scaleX = newWidth / blobReference.pathExtent.width;
+
+            const [ncx, ncy] = rotate(
+              cx,
+              cy,
+              x1 - newWidth / 2,
+              y1 - newHeight / 2,
+              blobReference.rotate
+            );
+
+            const [rotX0, rotY0] = rotate(
+              cx,
+              cy,
+              x1 - newWidth,
+              y1 - newHeight,
+              blobReference.rotate
+            );
+
+            const [nx0, ny0] = rotate(
+              ncx,
+              ncy,
+              rotX0,
+              rotY0,
+              -blobReference.rotate
+            );
+
             return {
-              x: blobReference.x - diffX,
-              y: blobReference.y - diffY,
+              x: nx0 - blobReference.pathExtent.x0,
+              y: ny0 - blobReference.pathExtent.y0,
               scaleY,
               scaleX
             };
