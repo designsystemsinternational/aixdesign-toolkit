@@ -7,3 +7,21 @@
   -webkit-user-select: none;
   -ms-user-select: none;
 }
+
+.handlesWrapper {
+  position: absolute;
+  overflow: hidden;
+  /* cursor: none; */
+}
+
+.cursor {
+  position: absolute;
+}
+/* 
+.cursor-wrapper {
+  background-image: url();
+} 
+
+.cursor-body {
+
+} */

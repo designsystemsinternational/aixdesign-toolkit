@@ -112,32 +112,29 @@ export const Input = ({ name, values, onChange }) => {
       {mainRef.current &&
         // App-module__main
         ReactDOM.createPortal(
-          <div>
-            {selected > -1 && (
-              <HandleContainer
-                width={width}
-                height={height}
-                offset={{ top: "1em", left: "1em" }}
-                blob={blobs[selected]}
-                onUpdateBlob={updateCallback => {
-                  const blobsCopy = [...blobs];
-                  let selectedBlobCopy = {
-                    ...blobs[selected]
-                  };
-                  const changes = updateCallback(selectedBlobCopy);
-                  selectedBlobCopy = {
-                    ...selectedBlobCopy,
-                    ...changes
-                  };
-                  updateBlobTransform(selectedBlobCopy);
-                  blobsCopy[selected] = selectedBlobCopy;
-                  onChange(null, name, blobsCopy);
-                }}
-              >
-                <Handles blob={selected > -1 ? blobs[selected] : null} />
-              </HandleContainer>
-            )}
-          </div>,
+          selected > -1 && (
+            <HandleContainer
+              width={width}
+              height={height}
+              offset={{ top: "1em", left: "1em" }}
+              blob={blobs[selected]}
+              onUpdateBlob={changes => {
+                const blobsCopy = [...blobs];
+                let selectedBlobCopy = {
+                  ...blobs[selected]
+                };
+                selectedBlobCopy = {
+                  ...selectedBlobCopy,
+                  ...changes
+                };
+                updateBlobTransform(selectedBlobCopy);
+                blobsCopy[selected] = selectedBlobCopy;
+                onChange(null, name, blobsCopy);
+              }}
+            >
+              <Handles blob={selected > -1 ? blobs[selected] : null} />
+            </HandleContainer>
+          ),
           mainRef.current
         )}
     </div>

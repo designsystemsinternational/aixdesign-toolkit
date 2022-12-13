@@ -1,4 +1,5 @@
 import React from "react";
+import cn from "classnames";
 
 import * as css from "./Handles.module.css";
 
@@ -13,19 +14,9 @@ export const updateBlobTransform = blob => {
   }) scale(${scaleX} ${scaleY}) translate(${-pathExtent.x0} ${-pathExtent.y0})`;
 };
 
-function rotate(cx, cy, x, y, angle) {
-  var radians = (Math.PI / 180) * -angle,
-    cos = Math.cos(radians),
-    sin = Math.sin(radians),
-    nx = cos * (x - cx) + sin * (y - cy) + cx,
-    ny = cos * (y - cy) - sin * (x - cx) + cy;
-  return [nx, ny];
-}
-
 const handleSize = 7;
 const rotationHandleSize = 20;
 const halfHandleSize = Math.floor(handleSize / 2);
-const halfRotationHandleSize = Math.floor(rotationHandleSize / 2);
 
 const debug = false;
 
@@ -41,7 +32,7 @@ export const Handles = ({ blob }) => {
   return (
     <>
       <div
-        id="handler-body"
+        id="handle-body"
         className={css.handle}
         style={{
           border: "1px dashed black",
@@ -132,7 +123,7 @@ export const Handles = ({ blob }) => {
         }}
       />
       <div
-        id="handle-se-rot"
+        id="handle-serot"
         className={css.handle}
         style={{
           border: debug ? "1px dashed black" : "",
@@ -178,7 +169,7 @@ export const Handles = ({ blob }) => {
         }}
       />
       <div
-        id="handle-sw-rot"
+        id="handle-swrot"
         className={css.handle}
         style={{
           border: debug ? "1px dashed black" : "",
@@ -210,7 +201,7 @@ export const Handles = ({ blob }) => {
         }}
       />
       <div
-        id="handle-nw-rot"
+        id="handle-nwrot"
         className={css.handle}
         style={{
           border: debug ? "1px dashed black" : "",
@@ -245,6 +236,103 @@ export const Handles = ({ blob }) => {
   );
 };
 
+const getBlobRect = blob => {
+  const width = blob.pathExtent.width * blob.scaleX;
+  const height = blob.pathExtent.height * blob.scaleY;
+  const ratio = height / width;
+
+  const cy = blob.y + blob.pathExtent.y0 + height / 2;
+  const cx = blob.x + blob.pathExtent.x0 + width / 2;
+
+  const x0 = blob.x + blob.pathExtent.x0;
+  const y0 = blob.y + blob.pathExtent.y0;
+  const x1 = x0 + width;
+  const y1 = y0 + height;
+
+  return { width, height, ratio, x0, y0, cx, cy, x1, y1 };
+};
+
+const scaleBlob = (blob, [x, y], vertical = null, horizontal = null) => {
+  const { rotate: rotation, pathExtent } = blob;
+  const { width, height, ratio, x0, y0, cx, cy, x1, y1 } = getBlobRect(blob);
+
+  const [rotX, rotY] = rotate(cx, cy, x, y, -rotation);
+
+  const dh = vertical === "n" ? y0 - rotY : vertical === "s" ? rotY - y1 : 0;
+  const dw =
+    horizontal === "w" ? x0 - rotX : horizontal === "e" ? rotX - x1 : 0;
+  const keepRatio = vertical != null && horizontal != null;
+
+  let newHeight = height + dh;
+  let newWidth = width + dw;
+  if (keepRatio && dh > dw * ratio) {
+    newWidth = newHeight / ratio;
+  } else if (keepRatio) {
+    newHeight = newWidth * ratio;
+  }
+  const scaleY = newHeight / pathExtent.height;
+  const scaleX = newWidth / pathExtent.width;
+
+  const [newCx, newCy] = rotate(
+    cx,
+    cy,
+    horizontal === "w"
+      ? x1 - newWidth / 2
+      : horizontal === "e"
+      ? x0 + newWidth / 2
+      : cx,
+    vertical === "n"
+      ? y1 - newHeight / 2
+      : vertical === "s"
+      ? y0 + newHeight / 2
+      : cy,
+    rotation
+  );
+  const [rotX0, rotY0] = rotate(
+    cx,
+    cy,
+    horizontal === "w" ? x1 - newWidth : x0,
+    vertical === "n" ? y1 - newHeight : y0,
+    rotation
+  );
+  const [newX0, newY0] = rotate(newCx, newCy, rotX0, rotY0, -rotation);
+
+  return {
+    x: newX0 - pathExtent.x0,
+    y: newY0 - pathExtent.y0,
+    scaleY,
+    scaleX
+  };
+};
+
+const rotateBlob = (blob, center, [x, y]) => {
+  const { cx, cy } = getBlobRect(blob);
+
+  const cdy = -(center.y - cy);
+  const cdx = center.x - cx;
+  const referenceAngle =
+    ((cdx > 0 ? Math.atan(cdy / cdx) : Math.atan(cdy / cdx) + Math.PI) * 180) /
+    Math.PI;
+
+  const dy = -(y - cy);
+  const dx = x - cx;
+  const angle =
+    ((dx > 0 ? Math.atan(dy / dx) : Math.atan(dy / dx) + Math.PI) * 180) /
+    Math.PI;
+  const dAngle = referenceAngle - angle;
+  const rotation = blob.rotate + dAngle;
+  return { rotate: rotation };
+};
+
+function rotate(cx, cy, x, y, angle) {
+  const radians = (Math.PI / 180) * -angle,
+    cos = Math.cos(radians),
+    sin = Math.sin(radians),
+    nx = cos * (x - cx) + sin * (y - cy) + cx,
+    ny = cos * (y - cy) - sin * (x - cx) + cy;
+  return [nx, ny];
+}
+
 export const HandleContainer = ({
   width,
   height,
@@ -253,605 +341,91 @@ export const HandleContainer = ({
   children,
   onUpdateBlob
 }) => {
+  const [cursor, setCursor] = React.useState({ x: null, y: null, id: null });
   const [dragging, setDragging] = React.useState("");
   const [blobReference, setBlobReference] = React.useState(null);
-  const [rotationInitialCoordinate, setRotationInitialCoordinate] =
-    React.useState(null);
+  const [initialCoordinate, setInitialCoordinate] = React.useState(null);
 
   const wrapperRef = React.useRef(null);
+
+  const getEventCoordinates = e => {
+    const { clientX, clientY } = e;
+    const parentRect = wrapperRef.current.getBoundingClientRect();
+    const x = clientX - parentRect.left;
+    const y = clientY - parentRect.top;
+    return { x, y };
+  };
+
+  // const cursorClass = cursor.id != null && cursor.id.split("-")[1];
+  // console.log({ cursorClass });
 
   return (
     <div
       id="handler-wrapper"
       ref={wrapperRef}
+      className={css.handlesWrapper}
       style={{
-        position: "absolute",
         top: offset.top,
         left: offset.left,
         width: width,
-        height: height,
-        overflow: "hidden"
+        height: height
       }}
       onMouseDown={e => {
-        if (e.target.id.includes("handle")) {
+        if (e.target.id != null) {
+          const { x, y } = getEventCoordinates(e);
+          setInitialCoordinate({ x, y });
           setBlobReference({ ...blob });
-        }
-        if (e.target.id.includes("rot")) {
-          const { clientX, clientY } = e;
-          const parentRect = wrapperRef.current.getBoundingClientRect();
-          const x = clientX - parentRect.left;
-          const y = clientY - parentRect.top;
-          setRotationInitialCoordinate({ x, y });
-        }
-        if (e.target.id === "handler-body") {
-          setDragging("body");
-        }
-        if (e.target.id === "handle-n") {
-          setDragging("resize-n");
-        }
-        if (e.target.id === "handle-s") {
-          setDragging("resize-s");
-        }
-        if (e.target.id === "handle-w") {
-          setDragging("resize-w");
-        }
-        if (e.target.id === "handle-e") {
-          setDragging("resize-e");
-        }
-        if (e.target.id === "handle-ne") {
-          setDragging("resize-ne");
-        }
-        if (e.target.id === "handle-se") {
-          setDragging("resize-se");
-        }
-        if (e.target.id === "handle-sw") {
-          setDragging("resize-sw");
-        }
-        if (e.target.id === "handle-nw") {
-          setDragging("resize-nw");
-        }
-        if (e.target.id === "handle-ne-rot") {
-          setDragging("rotate-ne");
-        }
-        if (e.target.id === "handle-nw-rot") {
-          setDragging("rotate-nw");
-        }
-        if (e.target.id === "handle-se-rot") {
-          setDragging("rotate-se");
-        }
-        if (e.target.id === "handle-sw-rot") {
-          setDragging("rotate-sw");
+          setDragging(e.target.id);
         }
       }}
       onMouseMove={e => {
-        if (dragging === "body")
-          onUpdateBlob(blob => ({
-            x: blob.x + e.movementX,
-            y: blob.y + e.movementY
-          }));
-        else if (dragging === "resize-n")
-          onUpdateBlob(blob => {
-            const { clientX, clientY } = e;
-            const parentRect = wrapperRef.current.getBoundingClientRect();
-            const x = clientX - parentRect.left;
-            const y = clientY - parentRect.top;
-
-            const width = blobReference.pathExtent.width * blobReference.scaleX;
-            const height =
-              blobReference.pathExtent.height * blobReference.scaleY;
-
-            const cy =
-              blobReference.y + blobReference.pathExtent.y0 + height / 2;
-            const cx =
-              blobReference.x + blobReference.pathExtent.x0 + width / 2;
-
-            const x0 = blobReference.x + blobReference.pathExtent.x0;
-            const y0 = blobReference.y + blobReference.pathExtent.y0;
-            const x1 = x0 + width;
-            const y1 = y0 + height;
-
-            const [rotX, rotY] = rotate(cx, cy, x, y, -blobReference.rotate);
-
-            const dh = y0 - rotY;
-            const newHeight = height + dh;
-            const scaleY = newHeight / blobReference.pathExtent.height;
-
-            const [ncx, ncy] = rotate(
-              cx,
-              cy,
-              cx,
-              y1 - newHeight / 2,
-              blobReference.rotate
-            );
-
-            const [rotX0, rotY0] = rotate(
-              cx,
-              cy,
-              x0,
-              y1 - newHeight,
-              blobReference.rotate
-            );
-
-            const [nx0, ny0] = rotate(
-              ncx,
-              ncy,
-              rotX0,
-              rotY0,
-              -blobReference.rotate
-            );
-
-            return {
-              x: nx0 - blobReference.pathExtent.x0,
-              y: ny0 - blobReference.pathExtent.y0,
-              scaleY
-            };
+        const { x, y } = getEventCoordinates(e);
+        setCursor({ x, y, id: e.target.id });
+        if (dragging === "handle-body") {
+          onUpdateBlob({
+            x: blobReference.x + (x - initialCoordinate.x),
+            y: blobReference.y + (y - initialCoordinate.y)
           });
-        else if (dragging === "resize-s")
-          onUpdateBlob(blob => {
-            const { clientX, clientY } = e;
-            const parentRect = wrapperRef.current.getBoundingClientRect();
-            const x = clientX - parentRect.left;
-            const y = clientY - parentRect.top;
-
-            const width = blobReference.pathExtent.width * blobReference.scaleX;
-            const height =
-              blobReference.pathExtent.height * blobReference.scaleY;
-
-            const cy =
-              blobReference.y + blobReference.pathExtent.y0 + height / 2;
-            const cx =
-              blobReference.x + blobReference.pathExtent.x0 + width / 2;
-
-            const x0 = blobReference.x + blobReference.pathExtent.x0;
-            const y0 = blobReference.y + blobReference.pathExtent.y0;
-            const y1 = y0 + height;
-
-            const [rotX, rotY] = rotate(cx, cy, x, y, -blobReference.rotate);
-
-            const dh = rotY - y1;
-            const newHeight = height + dh;
-            const scaleY = newHeight / blobReference.pathExtent.height;
-
-            const [ncx, ncy] = rotate(
-              cx,
-              cy,
-              cx,
-              y0 + newHeight / 2,
-              blobReference.rotate
-            );
-            const [rotX0, rotY0] = rotate(cx, cy, x0, y0, blobReference.rotate);
-
-            const [nx0, ny0] = rotate(
-              ncx,
-              ncy,
-              rotX0,
-              rotY0,
-              -blobReference.rotate
-            );
-
-            return {
-              x: nx0 - blobReference.pathExtent.x0,
-              y: ny0 - blobReference.pathExtent.y0,
-              scaleY
-            };
-          });
-        else if (dragging === "resize-w")
-          onUpdateBlob(blob => {
-            const { clientX, clientY } = e;
-            const parentRect = wrapperRef.current.getBoundingClientRect();
-            const x = clientX - parentRect.left;
-            const y = clientY - parentRect.top;
-
-            const width = blobReference.pathExtent.width * blobReference.scaleX;
-            const height =
-              blobReference.pathExtent.height * blobReference.scaleY;
-
-            const cy =
-              blobReference.y + blobReference.pathExtent.y0 + height / 2;
-            const cx =
-              blobReference.x + blobReference.pathExtent.x0 + width / 2;
-
-            const x0 = blobReference.x + blobReference.pathExtent.x0;
-            const y0 = blobReference.y + blobReference.pathExtent.y0;
-            const x1 = x0 + width;
-
-            const [rotX, rotY] = rotate(cx, cy, x, y, -blobReference.rotate);
-
-            const dw = x0 - rotX;
-            const newWidth = width + dw;
-            const scaleX = newWidth / blobReference.pathExtent.width;
-
-            const [ncx, ncy] = rotate(
-              cx,
-              cy,
-              x1 - newWidth / 2,
-              cy,
-              blobReference.rotate
-            );
-            const [rotX0, rotY0] = rotate(
-              cx,
-              cy,
-              x1 - newWidth,
-              y0,
-              blobReference.rotate
-            );
-
-            const [nx0, ny0] = rotate(
-              ncx,
-              ncy,
-              rotX0,
-              rotY0,
-              -blobReference.rotate
-            );
-
-            return {
-              x: nx0 - blobReference.pathExtent.x0,
-              y: ny0 - blobReference.pathExtent.y0,
-              scaleX
-            };
-          });
-        else if (dragging === "resize-e")
-          onUpdateBlob(blob => {
-            const { clientX, clientY } = e;
-            const parentRect = wrapperRef.current.getBoundingClientRect();
-            const x = clientX - parentRect.left;
-            const y = clientY - parentRect.top;
-
-            const width = blobReference.pathExtent.width * blobReference.scaleX;
-            const height =
-              blobReference.pathExtent.height * blobReference.scaleY;
-
-            const cy =
-              blobReference.y + blobReference.pathExtent.y0 + height / 2;
-            const cx =
-              blobReference.x + blobReference.pathExtent.x0 + width / 2;
-
-            const x0 = blobReference.x + blobReference.pathExtent.x0;
-            const y0 = blobReference.y + blobReference.pathExtent.y0;
-            const x1 = x0 + width;
-
-            const [rotX, rotY] = rotate(cx, cy, x, y, -blobReference.rotate);
-
-            const dw = rotX - x1;
-            const newWidth = width + dw;
-            const scaleX = newWidth / blobReference.pathExtent.width;
-
-            const [ncx, ncy] = rotate(
-              cx,
-              cy,
-              x0 + newWidth / 2,
-              cy,
-              blobReference.rotate
-            );
-            const [rotX0, rotY0] = rotate(cx, cy, x0, y0, blobReference.rotate);
-
-            const [nx0, ny0] = rotate(
-              ncx,
-              ncy,
-              rotX0,
-              rotY0,
-              -blobReference.rotate
-            );
-
-            return {
-              x: nx0 - blobReference.pathExtent.x0,
-              y: ny0 - blobReference.pathExtent.y0,
-              scaleX
-            };
-          });
-        else if (dragging === "resize-ne")
-          onUpdateBlob(blob => {
-            const { clientX, clientY } = e;
-            const parentRect = wrapperRef.current.getBoundingClientRect();
-            const x = clientX - parentRect.left;
-            const y = clientY - parentRect.top;
-
-            const width = blobReference.pathExtent.width * blobReference.scaleX;
-            const height =
-              blobReference.pathExtent.height * blobReference.scaleY;
-            const cy =
-              blobReference.y + blobReference.pathExtent.y0 + height / 2;
-            const cx =
-              blobReference.x + blobReference.pathExtent.x0 + width / 2;
-            const x0 = blobReference.x + blobReference.pathExtent.x0;
-            const y0 = blobReference.y + blobReference.pathExtent.y0;
-            const x1 = x0 + width;
-            const y1 = y0 + height;
-            const ratio = height / width;
-
-            const [rotX, rotY] = rotate(cx, cy, x, y, -blobReference.rotate);
-
-            const dy = y0 - rotY;
-            const dx = rotX - x1;
-            let newHeight = height;
-            let newWidth = width;
-            if (dy > dx * ratio) {
-              newHeight = height + dy;
-              newWidth = newHeight / ratio;
-            } else {
-              newWidth = width + dx;
-              newHeight = newWidth * ratio;
-            }
-
-            const scaleY = newHeight / blobReference.pathExtent.height;
-            const scaleX = newWidth / blobReference.pathExtent.width;
-
-            const [ncx, ncy] = rotate(
-              cx,
-              cy,
-              x0 + newWidth / 2,
-              y1 - newHeight / 2,
-              blobReference.rotate
-            );
-
-            const [rotX0, rotY0] = rotate(
-              cx,
-              cy,
-              x0,
-              y1 - newHeight,
-              blobReference.rotate
-            );
-
-            const [nx0, ny0] = rotate(
-              ncx,
-              ncy,
-              rotX0,
-              rotY0,
-              -blobReference.rotate
-            );
-
-            return {
-              x: nx0 - blobReference.pathExtent.x0,
-              y: ny0 - blobReference.pathExtent.y0,
-              scaleY,
-              scaleX
-            };
-          });
-        else if (dragging === "resize-se")
-          onUpdateBlob(blob => {
-            const { clientX, clientY } = e;
-            const parentRect = wrapperRef.current.getBoundingClientRect();
-            const x = clientX - parentRect.left;
-            const y = clientY - parentRect.top;
-
-            const width = blobReference.pathExtent.width * blobReference.scaleX;
-            const height =
-              blobReference.pathExtent.height * blobReference.scaleY;
-            const cy =
-              blobReference.y + blobReference.pathExtent.y0 + height / 2;
-            const cx =
-              blobReference.x + blobReference.pathExtent.x0 + width / 2;
-            const x0 = blobReference.x + blobReference.pathExtent.x0;
-            const y0 = blobReference.y + blobReference.pathExtent.y0;
-            const x1 = x0 + width;
-            const y1 = y0 + height;
-            const ratio = height / width;
-
-            const [rotX, rotY] = rotate(cx, cy, x, y, -blobReference.rotate);
-
-            const dy = rotY - y1;
-            const dx = rotX - x1;
-            let newHeight = height;
-            let newWidth = width;
-            if (dy > dx * ratio) {
-              newHeight = height + dy;
-              newWidth = newHeight / ratio;
-            } else {
-              newWidth = width + dx;
-              newHeight = newWidth * ratio;
-            }
-
-            const scaleY = newHeight / blobReference.pathExtent.height;
-            const scaleX = newWidth / blobReference.pathExtent.width;
-
-            const [ncx, ncy] = rotate(
-              cx,
-              cy,
-              x0 + newWidth / 2,
-              y0 + newHeight / 2,
-              blobReference.rotate
-            );
-
-            const [rotX0, rotY0] = rotate(cx, cy, x0, y0, blobReference.rotate);
-
-            const [nx0, ny0] = rotate(
-              ncx,
-              ncy,
-              rotX0,
-              rotY0,
-              -blobReference.rotate
-            );
-
-            return {
-              x: nx0 - blobReference.pathExtent.x0,
-              y: ny0 - blobReference.pathExtent.y0,
-              scaleY,
-              scaleX
-            };
-          });
-        else if (dragging === "resize-sw")
-          onUpdateBlob(blob => {
-            const { clientX, clientY } = e;
-            const parentRect = wrapperRef.current.getBoundingClientRect();
-            const x = clientX - parentRect.left;
-            const y = clientY - parentRect.top;
-
-            const width = blobReference.pathExtent.width * blobReference.scaleX;
-            const height =
-              blobReference.pathExtent.height * blobReference.scaleY;
-            const cy =
-              blobReference.y + blobReference.pathExtent.y0 + height / 2;
-            const cx =
-              blobReference.x + blobReference.pathExtent.x0 + width / 2;
-            const x0 = blobReference.x + blobReference.pathExtent.x0;
-            const y0 = blobReference.y + blobReference.pathExtent.y0;
-            const x1 = x0 + width;
-            const y1 = y0 + height;
-            const ratio = height / width;
-
-            const [rotX, rotY] = rotate(cx, cy, x, y, -blobReference.rotate);
-
-            const dy = rotY - y1;
-            const dx = x0 - rotX;
-            let newHeight = height;
-            let newWidth = width;
-            if (dy > dx * ratio) {
-              newHeight = height + dy;
-              newWidth = newHeight / ratio;
-            } else {
-              newWidth = width + dx;
-              newHeight = newWidth * ratio;
-            }
-
-            const scaleY = newHeight / blobReference.pathExtent.height;
-            const scaleX = newWidth / blobReference.pathExtent.width;
-
-            const [ncx, ncy] = rotate(
-              cx,
-              cy,
-              x1 - newWidth / 2,
-              y0 + newHeight / 2,
-              blobReference.rotate
-            );
-
-            const [rotX0, rotY0] = rotate(
-              cx,
-              cy,
-              x1 - newWidth,
-              y0,
-              blobReference.rotate
-            );
-
-            const [nx0, ny0] = rotate(
-              ncx,
-              ncy,
-              rotX0,
-              rotY0,
-              -blobReference.rotate
-            );
-
-            return {
-              x: nx0 - blobReference.pathExtent.x0,
-              y: ny0 - blobReference.pathExtent.y0,
-              scaleY,
-              scaleX
-            };
-          });
-        else if (dragging === "resize-nw")
-          onUpdateBlob(blob => {
-            const { clientX, clientY } = e;
-            const parentRect = wrapperRef.current.getBoundingClientRect();
-            const x = clientX - parentRect.left;
-            const y = clientY - parentRect.top;
-
-            const width = blobReference.pathExtent.width * blobReference.scaleX;
-            const height =
-              blobReference.pathExtent.height * blobReference.scaleY;
-            const cy =
-              blobReference.y + blobReference.pathExtent.y0 + height / 2;
-            const cx =
-              blobReference.x + blobReference.pathExtent.x0 + width / 2;
-            const x0 = blobReference.x + blobReference.pathExtent.x0;
-            const y0 = blobReference.y + blobReference.pathExtent.y0;
-            const x1 = x0 + width;
-            const y1 = y0 + height;
-            const ratio = height / width;
-
-            const [rotX, rotY] = rotate(cx, cy, x, y, -blobReference.rotate);
-
-            const dy = -(rotY - y0);
-            const dx = -(rotX - x0);
-            let newHeight = height;
-            let newWidth = width;
-            if (dy > dx * ratio) {
-              newHeight = height + dy;
-              newWidth = newHeight / ratio;
-            } else {
-              newWidth = width + dx;
-              newHeight = newWidth * ratio;
-            }
-
-            const scaleY = newHeight / blobReference.pathExtent.height;
-            const scaleX = newWidth / blobReference.pathExtent.width;
-
-            const [ncx, ncy] = rotate(
-              cx,
-              cy,
-              x1 - newWidth / 2,
-              y1 - newHeight / 2,
-              blobReference.rotate
-            );
-
-            const [rotX0, rotY0] = rotate(
-              cx,
-              cy,
-              x1 - newWidth,
-              y1 - newHeight,
-              blobReference.rotate
-            );
-
-            const [nx0, ny0] = rotate(
-              ncx,
-              ncy,
-              rotX0,
-              rotY0,
-              -blobReference.rotate
-            );
-
-            return {
-              x: nx0 - blobReference.pathExtent.x0,
-              y: ny0 - blobReference.pathExtent.y0,
-              scaleY,
-              scaleX
-            };
-          });
-        else if (dragging.includes("rotate"))
-          onUpdateBlob(blob => {
-            const { clientX, clientY } = e;
-            const parentRect = wrapperRef.current.getBoundingClientRect();
-            const x = clientX - parentRect.left;
-            const y = clientY - parentRect.top;
-
-            const width = blobReference.pathExtent.width * blobReference.scaleX;
-            const height =
-              blobReference.pathExtent.height * blobReference.scaleY;
-            const cy =
-              blobReference.y + blobReference.pathExtent.y0 + height / 2;
-            const cx =
-              blobReference.x + blobReference.pathExtent.x0 + width / 2;
-
-            const cdy = -(rotationInitialCoordinate.y - cy);
-            const cdx = rotationInitialCoordinate.x - cx;
-            const referenceAngle =
-              ((cdx > 0
-                ? Math.atan(cdy / cdx)
-                : Math.atan(cdy / cdx) + Math.PI) *
-                180) /
-              Math.PI;
-
-            const dy = -(y - cy);
-            const dx = x - cx;
-            const angle =
-              ((dx > 0 ? Math.atan(dy / dx) : Math.atan(dy / dx) + Math.PI) *
-                180) /
-              Math.PI;
-            const dAngle = referenceAngle - angle;
-
-            const rotation = blobReference.rotate + dAngle;
-
-            return {
-              rotate: rotation
-            };
-          });
+        } else if (dragging.includes("handle") && !dragging.includes("rot")) {
+          const handleId = dragging.split("-")[1];
+          const vertical = handleId.includes("n")
+            ? "n"
+            : handleId.includes("s")
+            ? "s"
+            : null;
+          const horizontal = handleId.includes("w")
+            ? "w"
+            : handleId.includes("e")
+            ? "e"
+            : null;
+          onUpdateBlob(scaleBlob(blobReference, [x, y], vertical, horizontal));
+        } else if (dragging.includes("rot")) {
+          onUpdateBlob(rotateBlob(blobReference, initialCoordinate, [x, y]));
+        }
       }}
-      onMouseUp={e => {
+      onMouseUp={_e => {
         if (dragging) {
           setDragging("");
           setBlobReference(null);
-          setRotationInitialCoordinate(null);
+          setInitialCoordinate(null);
         }
       }}
+      onMouseLeave={() => setCursor({ x: null, y: null })}
     >
+      {/* {cursor.x != null && cursor.y != null && (
+        <div
+          id="cursor"
+          className={[css.cursor]}
+          style={{
+            left: cursor.x,
+            top: cursor.y,
+            transform: `rotate(${blob.rotate}deg)`,
+            border: "1px solid black"
+          }}
+        >
+          T
+        </div>
+      )} */}
       {children}
     </div>
   );
