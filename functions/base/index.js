@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 
 export const handler = ({ inputs, mechanic }) => {
-  const { width, height, blobs, showPictures } = inputs;
+  const { width, height, blobs, showPictures, _ratio } = inputs;
 
   useEffect(() => {
     mechanic.done();
@@ -10,24 +10,26 @@ export const handler = ({ inputs, mechanic }) => {
   return (
     <svg width={width} height={height}>
       <rect width={width} height={height} fill="none" stroke="black" />
-      {blobs.map(({ path, fill, href, transform, x, y }, index) =>
-        !showPictures ? (
-          <path key={index} d={path} fill={fill} transform={transform} />
-        ) : (
-          <React.Fragment key={index}>
-            <defs>
-              <clipPath id={`clip-${index}`}>
-                <path d={path} />
-              </clipPath>
-            </defs>
-            <image
-              xlinkHref={href}
-              clipPath={`url(#clip-${index})`}
-              transform={transform}
-            />
-          </React.Fragment>
-        )
-      )}
+      <g transform={`scale(${_ratio})`}>
+        {blobs.map(({ path, fill, href, transform, x, y }, index) =>
+          !showPictures ? (
+            <path key={index} d={path} fill={fill} transform={transform} />
+          ) : (
+            <React.Fragment key={index}>
+              <defs>
+                <clipPath id={`clip-${index}`}>
+                  <path d={path} />
+                </clipPath>
+              </defs>
+              <image
+                xlinkHref={href}
+                clipPath={`url(#clip-${index})`}
+                transform={transform}
+              />
+            </React.Fragment>
+          )
+        )}
+      </g>
     </svg>
   );
 };

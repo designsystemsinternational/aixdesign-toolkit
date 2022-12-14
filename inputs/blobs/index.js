@@ -53,6 +53,7 @@ export const Input = ({ name, values, onChange }) => {
 
   let width = values.width;
   let height = values.height;
+  let ratio = 1;
 
   const boundingClient = mainRef.current?.getBoundingClientRect();
 
@@ -64,7 +65,7 @@ export const Input = ({ name, values, onChange }) => {
     const ratioWidth = bounds.width ? bounds.width / values.width : 1;
     const ratioHeight = bounds.height ? bounds.height / values.height : 1;
     if (ratioWidth < 1 || ratioHeight < 1) {
-      const ratio = ratioWidth < ratioHeight ? ratioWidth : ratioHeight;
+      ratio = ratioWidth < ratioHeight ? ratioWidth : ratioHeight;
       width = Math.floor(values.width * ratio);
       height = Math.floor(values.height * ratio);
     }
@@ -110,10 +111,10 @@ export const Input = ({ name, values, onChange }) => {
       )}
 
       {mainRef.current &&
-        // App-module__main
         ReactDOM.createPortal(
           selected > -1 && (
             <HandleContainer
+              ratio={ratio}
               width={width}
               height={height}
               offset={{ top: "1em", left: "1em" }}
@@ -123,6 +124,8 @@ export const Input = ({ name, values, onChange }) => {
                 let selectedBlobCopy = {
                   ...blobs[selected]
                 };
+                if (changes.scaleX && changes.scaleX <= 0) return;
+                if (changes.scaleY && changes.scaleY <= 0) return;
                 selectedBlobCopy = {
                   ...selectedBlobCopy,
                   ...changes
@@ -132,7 +135,10 @@ export const Input = ({ name, values, onChange }) => {
                 onChange(null, name, blobsCopy);
               }}
             >
-              <Handles blob={selected > -1 ? blobs[selected] : null} />
+              <Handles
+                ratio={ratio}
+                blob={selected > -1 ? blobs[selected] : null}
+              />
             </HandleContainer>
           ),
           mainRef.current

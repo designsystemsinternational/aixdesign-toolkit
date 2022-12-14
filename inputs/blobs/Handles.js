@@ -20,14 +20,14 @@ const halfHandleSize = Math.floor(handleSize / 2);
 
 const debug = false;
 
-export const Handles = ({ blob }) => {
+export const Handles = ({ ratio, blob }) => {
   if (blob == null) return null;
 
   const rotate = blob.rotate;
-  const x0 = blob.pathExtent.x0 + blob.x;
-  const y0 = blob.pathExtent.y0 + blob.y;
-  const width = blob.scaleX * blob.pathExtent.width;
-  const height = blob.scaleY * blob.pathExtent.height;
+  const x0 = ratio * (blob.pathExtent.x0 + blob.x);
+  const y0 = ratio * (blob.pathExtent.y0 + blob.y);
+  const width = ratio * (blob.scaleX * blob.pathExtent.width);
+  const height = ratio * (blob.scaleY * blob.pathExtent.height);
 
   return (
     <>
@@ -239,10 +239,18 @@ const getBlobRect = blob => {
   return { width, height, ratio, x0, y0, cx, cy, x1, y1 };
 };
 
-const scaleBlob = (blob, [x, y], vertical = null, horizontal = null) => {
+const scaleBlob = (
+  blob,
+  [screenX, screenY],
+  screenRatio,
+  vertical = null,
+  horizontal = null
+) => {
   const { rotate: rotation, pathExtent } = blob;
   const { width, height, ratio, x0, y0, cx, cy, x1, y1 } = getBlobRect(blob);
 
+  const x = screenX / screenRatio;
+  const y = screenY / screenRatio;
   const [rotX, rotY] = rotate(cx, cy, x, y, -rotation);
 
   const dh = vertical === "n" ? y0 - rotY : vertical === "s" ? rotY - y1 : 0;
@@ -292,11 +300,13 @@ const scaleBlob = (blob, [x, y], vertical = null, horizontal = null) => {
   };
 };
 
-const rotateBlob = (blob, center, [x, y]) => {
+const rotateBlob = (blob, center, [screenX, screenY], screenRatio) => {
   const { cx, cy } = getBlobRect(blob);
+  const x = screenX / screenRatio;
+  const y = screenY / screenRatio;
 
-  const cdy = -(center.y - cy);
-  const cdx = center.x - cx;
+  const cdy = -(center.y / screenRatio - cy);
+  const cdx = center.x / screenRatio - cx;
   const referenceAngle =
     ((cdx > 0 ? Math.atan(cdy / cdx) : Math.atan(cdy / cdx) + Math.PI) * 180) /
     Math.PI;
@@ -326,6 +336,7 @@ const camelCase = string =>
   });
 
 export const HandleContainer = ({
+  ratio,
   width,
   height,
   offset,
@@ -380,9 +391,11 @@ export const HandleContainer = ({
           setCursorId(e.target.id);
         }
         if (dragging === "handle-body") {
+          const diffX = (x - initialCoordinate.x) / ratio;
+          const diffY = (y - initialCoordinate.y) / ratio;
           onUpdateBlob({
-            x: blobReference.x + (x - initialCoordinate.x),
-            y: blobReference.y + (y - initialCoordinate.y)
+            x: blobReference.x + diffX,
+            y: blobReference.y + diffY
           });
         } else if (dragging.includes("handle") && !dragging.includes("rot")) {
           const handleId = dragging.split("-")[1];
@@ -396,9 +409,13 @@ export const HandleContainer = ({
             : handleId.includes("e")
             ? "e"
             : null;
-          onUpdateBlob(scaleBlob(blobReference, [x, y], vertical, horizontal));
+          onUpdateBlob(
+            scaleBlob(blobReference, [x, y], ratio, vertical, horizontal)
+          );
         } else if (dragging.includes("rot")) {
-          onUpdateBlob(rotateBlob(blobReference, initialCoordinate, [x, y]));
+          onUpdateBlob(
+            rotateBlob(blobReference, initialCoordinate, [x, y], ratio)
+          );
         }
       }}
       onMouseUp={_e => {
@@ -420,7 +437,7 @@ export const HandleContainer = ({
           style={{
             left: cursor.x,
             top: cursor.y,
-            transform: `rotate(${blob.rotate}deg)`
+            transform: cursorClass ? `rotate(${blob.rotate}deg)` : ""
           }}
         />
       )}
