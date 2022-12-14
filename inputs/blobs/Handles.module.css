@@ -11,17 +11,63 @@
 .handlesWrapper {
   position: absolute;
   overflow: hidden;
-  /* cursor: none; */
+  cursor: none;
 }
 
 .cursor {
   position: absolute;
+  width: 15px;
+  height: 15px;
+  background-size: 15px 15px;
+  background-image: url("cursor/cursor.svg");
 }
-/* 
+
 .cursor-wrapper {
-  background-image: url();
+  
 } 
 
 .cursor-body {
+  background-image: url("cursor/move.svg");
+  translate: -7.5px -7.5px;
+}
 
-} */
+.cursor-n, .cursor-s {
+  background-image: url("cursor/resize-vert.svg");
+  translate: -7.5px -7.5px;
+}
+
+.cursor-e, .cursor-w {
+  background-image: url("cursor/resize-hor.svg");
+  translate: -7.5px -7.5px;
+}
+
+.cursor-ne, .cursor-sw {
+  background-image: url("cursor/resize-nesw.svg");
+  translate: -7.5px -7.5px;
+}
+
+.cursor-nw, .cursor-se {
+  background-image: url("cursor/resize-nwse.svg");
+  translate: -7.5px -7.5px;
+}
+
+
+.cursor-nwrot {
+  background-image: url("cursor/rotate-nw.svg");
+  translate: -7.5px -7.5px;
+}
+
+.cursor-swrot {
+  background-image: url("cursor/rotate-sw.svg");
+  translate: -7.5px -7.5px;
+}
+
+.cursor-serot {
+  background-image: url("cursor/rotate-se.svg");
+  translate: -7.5px -7.5px;
+}
+
+.cursor-nerot {
+  background-image: url("cursor/rotate-ne.svg");
+  translate: -7.5px -7.5px;
+}

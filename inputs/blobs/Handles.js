@@ -40,7 +40,6 @@ export const Handles = ({ blob }) => {
           top: y0,
           height: height,
           width: width,
-          cursor: "move",
           transform: `rotate(${rotate}deg)`
         }}
       />
@@ -53,7 +52,6 @@ export const Handles = ({ blob }) => {
           top: y0 - halfHandleSize,
           height: handleSize,
           width: width,
-          cursor: "ns-resize",
           transform: `rotate(${rotate}deg)`,
           transformOrigin: `${width / 2}px ${halfHandleSize + height / 2}px`
         }}
@@ -67,7 +65,6 @@ export const Handles = ({ blob }) => {
           top: y0,
           height: height,
           width: handleSize,
-          cursor: "ew-resize",
           transform: `rotate(${rotate}deg)`,
           transformOrigin: `${-width / 2 + (halfHandleSize + 1)}px ${
             height / 2
@@ -75,7 +72,7 @@ export const Handles = ({ blob }) => {
         }}
       />
       <div
-        id="handle-ne-rot"
+        id="handle-nerot"
         className={css.handle}
         style={{
           border: debug ? "1px dashed black" : "",
@@ -83,7 +80,6 @@ export const Handles = ({ blob }) => {
           top: y0 - rotationHandleSize + halfHandleSize + 1,
           height: rotationHandleSize,
           width: rotationHandleSize,
-          cursor: "nwse-resize",
           transform: `rotate(${rotate}deg)`,
           transformOrigin: `${-width / 2 + (halfHandleSize + 1)}px ${
             height / 2 + rotationHandleSize - (halfHandleSize + 1)
@@ -99,7 +95,6 @@ export const Handles = ({ blob }) => {
           top: y0 - halfHandleSize,
           height: handleSize,
           width: handleSize,
-          cursor: "nesw-resize",
           transform: `rotate(${rotate}deg)`,
           transformOrigin: `${-width / 2 + (halfHandleSize + 1)}px ${
             height / 2 + halfHandleSize
@@ -115,7 +110,6 @@ export const Handles = ({ blob }) => {
           top: y0 + height - (halfHandleSize + 1),
           height: handleSize,
           width: width,
-          cursor: "ns-resize",
           transform: `rotate(${rotate}deg)`,
           transformOrigin: `${width / 2}px ${
             -height / 2 + (halfHandleSize + 1)
@@ -131,7 +125,6 @@ export const Handles = ({ blob }) => {
           top: y0 + height - (halfHandleSize + 1),
           height: rotationHandleSize,
           width: rotationHandleSize,
-          cursor: "nesw-resize",
           transform: `rotate(${rotate}deg)`,
           transformOrigin: `${-width / 2 + (halfHandleSize + 1)}px ${
             -height / 2 + (halfHandleSize + 1)
@@ -147,7 +140,6 @@ export const Handles = ({ blob }) => {
           top: y0 + height - (halfHandleSize + 1),
           height: handleSize,
           width: handleSize,
-          cursor: "nwse-resize",
           transform: `rotate(${rotate}deg)`,
           transformOrigin: `${-width / 2 + (halfHandleSize + 1)}px ${
             -height / 2 + (halfHandleSize + 1)
@@ -163,7 +155,6 @@ export const Handles = ({ blob }) => {
           top: y0,
           height: height,
           width: handleSize,
-          cursor: "ew-resize",
           transform: `rotate(${rotate}deg)`,
           transformOrigin: `${width / 2 + halfHandleSize}px ${height / 2}px`
         }}
@@ -177,7 +168,6 @@ export const Handles = ({ blob }) => {
           top: y0 + height - (halfHandleSize + 1),
           height: rotationHandleSize,
           width: rotationHandleSize,
-          cursor: "nwse-resize",
           transform: `rotate(${rotate}deg)`,
           transformOrigin: `${
             width / 2 + rotationHandleSize - (halfHandleSize + 1)
@@ -193,7 +183,6 @@ export const Handles = ({ blob }) => {
           top: y0 + height - (halfHandleSize + 1),
           height: handleSize,
           width: handleSize,
-          cursor: "nesw-resize",
           transform: `rotate(${rotate}deg)`,
           transformOrigin: `${width / 2 + halfHandleSize}px ${
             -height / 2 + (halfHandleSize + 1)
@@ -209,7 +198,6 @@ export const Handles = ({ blob }) => {
           top: y0 - rotationHandleSize + halfHandleSize + 1,
           height: rotationHandleSize,
           width: rotationHandleSize,
-          cursor: "nesw-resize",
           transform: `rotate(${rotate}deg)`,
           transformOrigin: `${
             width / 2 + rotationHandleSize - (halfHandleSize + 1)
@@ -225,7 +213,6 @@ export const Handles = ({ blob }) => {
           top: y0 - halfHandleSize,
           height: handleSize,
           width: handleSize,
-          cursor: "nwse-resize",
           transform: `rotate(${rotate}deg)`,
           transformOrigin: `${width / 2 + halfHandleSize}px ${
             height / 2 + halfHandleSize
@@ -333,6 +320,11 @@ function rotate(cx, cy, x, y, angle) {
   return [nx, ny];
 }
 
+const camelCase = string =>
+  string.replace(/-([a-z])/g, function (g) {
+    return g[1].toUpperCase();
+  });
+
 export const HandleContainer = ({
   width,
   height,
@@ -341,7 +333,8 @@ export const HandleContainer = ({
   children,
   onUpdateBlob
 }) => {
-  const [cursor, setCursor] = React.useState({ x: null, y: null, id: null });
+  const [cursor, setCursor] = React.useState({ x: null, y: null });
+  const [cursorId, setCursorId] = React.useState(null);
   const [dragging, setDragging] = React.useState("");
   const [blobReference, setBlobReference] = React.useState(null);
   const [initialCoordinate, setInitialCoordinate] = React.useState(null);
@@ -356,12 +349,14 @@ export const HandleContainer = ({
     return { x, y };
   };
 
-  // const cursorClass = cursor.id != null && cursor.id.split("-")[1];
-  // console.log({ cursorClass });
+  const cursorClass =
+    cursorId != null && cursorId.includes("-")
+      ? camelCase(`cursor-${cursorId.split("-")[1]}`)
+      : "";
 
   return (
     <div
-      id="handler-wrapper"
+      id="wrapper"
       ref={wrapperRef}
       className={css.handlesWrapper}
       style={{
@@ -380,7 +375,10 @@ export const HandleContainer = ({
       }}
       onMouseMove={e => {
         const { x, y } = getEventCoordinates(e);
-        setCursor({ x, y, id: e.target.id });
+        setCursor({ x, y });
+        if (dragging === "") {
+          setCursorId(e.target.id);
+        }
         if (dragging === "handle-body") {
           onUpdateBlob({
             x: blobReference.x + (x - initialCoordinate.x),
@@ -410,22 +408,22 @@ export const HandleContainer = ({
           setInitialCoordinate(null);
         }
       }}
-      onMouseLeave={() => setCursor({ x: null, y: null })}
+      onMouseLeave={() => {
+        setCursor({ x: null, y: null });
+        setCursorId(null);
+      }}
     >
-      {/* {cursor.x != null && cursor.y != null && (
+      {cursor.x != null && cursor.y != null && (
         <div
           id="cursor"
-          className={[css.cursor]}
+          className={cn(css.cursor, css[cursorClass])}
           style={{
             left: cursor.x,
             top: cursor.y,
-            transform: `rotate(${blob.rotate}deg)`,
-            border: "1px solid black"
+            transform: `rotate(${blob.rotate}deg)`
           }}
-        >
-          T
-        </div>
-      )} */}
+        />
+      )}
       {children}
     </div>
   );
