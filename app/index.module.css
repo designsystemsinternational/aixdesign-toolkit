@@ -3,4 +3,6 @@
   padding: 0 2em;
   display: flex;
   flex-direction: column;
+  font-family: 'MaccabiBlock', sans-serif;
+  color: black;
 }

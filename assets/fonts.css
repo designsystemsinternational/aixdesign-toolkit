@@ -1,0 +1,32 @@
+@font-face {
+  font-family: "MaccabiBlock";
+  src:
+    url("./MaccabiBlock-Regular.woff")
+      format("woff");
+  font-display: auto;
+  font-style: normal;
+  font-weight: 400;
+  font-stretch: normal;
+}
+  
+@font-face {
+  font-family: "MaccabiBlock";
+  src: url("./MaccabiBlock-Bold.woff2")
+      format("woff2"),
+    url("./MaccabiBlock-Bold.woff")
+      format("woff");
+  font-display: auto;
+  font-style: normal;
+  font-weight: 500;
+  font-stretch: normal;
+}
+
+@font-face {
+  font-family: "MaccabiBlock";
+  src: url("./MaccabiBlock-Light.woff")
+      format("woff");
+  font-display: auto;
+  font-style: light;
+  font-weight: 300;
+  font-stretch: normal;
+}

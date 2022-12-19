@@ -2,7 +2,7 @@ import React from "react";
 
 import { Button } from "@mechanic-design/ui-components";
 
-import { parseBlob } from "./parse-blob";
+import { parseBlob } from "../utils/parse-blob.js";
 import { ColorSelector } from "./ColorSelector";
 
 import * as css from "./BlobForm.module.css";

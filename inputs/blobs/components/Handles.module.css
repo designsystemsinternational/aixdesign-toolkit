@@ -19,7 +19,7 @@
   width: 15px;
   height: 15px;
   background-size: 15px 15px;
-  background-image: url("cursor/cursor.svg");
+  background-image: url("cursor-images/cursor.svg");
 }
 
 .cursor-wrapper {
@@ -27,47 +27,47 @@
 } 
 
 .cursor-body {
-  background-image: url("cursor/move.svg");
+  background-image: url("cursor-images/move.svg");
   translate: -7.5px -7.5px;
 }
 
 .cursor-n, .cursor-s {
-  background-image: url("cursor/resize-vert.svg");
+  background-image: url("cursor-images/resize-vert.svg");
   translate: -7.5px -7.5px;
 }
 
 .cursor-e, .cursor-w {
-  background-image: url("cursor/resize-hor.svg");
+  background-image: url("cursor-images/resize-hor.svg");
   translate: -7.5px -7.5px;
 }
 
 .cursor-ne, .cursor-sw {
-  background-image: url("cursor/resize-nesw.svg");
+  background-image: url("cursor-images/resize-nesw.svg");
   translate: -7.5px -7.5px;
 }
 
 .cursor-nw, .cursor-se {
-  background-image: url("cursor/resize-nwse.svg");
+  background-image: url("cursor-images/resize-nwse.svg");
   translate: -7.5px -7.5px;
 }
 
 
 .cursor-nwrot {
-  background-image: url("cursor/rotate-nw.svg");
+  background-image: url("cursor-images/rotate-nw.svg");
   translate: -7.5px -7.5px;
 }
 
 .cursor-swrot {
-  background-image: url("cursor/rotate-sw.svg");
+  background-image: url("cursor-images/rotate-sw.svg");
   translate: -7.5px -7.5px;
 }
 
 .cursor-serot {
-  background-image: url("cursor/rotate-se.svg");
+  background-image: url("cursor-images/rotate-se.svg");
   translate: -7.5px -7.5px;
 }
 
 .cursor-nerot {
-  background-image: url("cursor/rotate-ne.svg");
+  background-image: url("cursor-images/rotate-ne.svg");
   translate: -7.5px -7.5px;
 }

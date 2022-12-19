@@ -1,11 +1,16 @@
 import React from "react";
 import ReactDOM from "react-dom";
 
-import { Modal } from "./Modal";
-import { BlobForm } from "./BlobForm";
-import { BlobElementControl } from "./BlobElementControl";
-import { HandleContainer, Handles, updateBlobTransform } from "./Handles";
+import { Modal } from "./components/Modal";
+import { BlobForm } from "./components/BlobForm";
+import { BlobElementControl } from "./components/BlobElementControl";
+import {
+  HandleContainer,
+  Handles,
+  updateBlobTransform
+} from "./components/Handles";
 
+import "../../assets/fonts.css";
 import * as css from "./styles.module.css";
 
 export const initValue = input => [];
