@@ -27,7 +27,26 @@ export const BlobElementControl = ({
       style={{ background: selected ? "#eee" : "transparent" }}
     >
       <button className={css.blobControl} onClick={onClick}>
-        Select
+        <svg viewBox="0 0 20 20" width={20}>
+          <circle
+            fill="transparent"
+            stroke="black"
+            cx={10}
+            cy={10}
+            r={8}
+            strokeWidth={2}
+          />
+          {selected && (
+            <circle
+              fill="black"
+              stroke="black"
+              cx={10}
+              cy={10}
+              r={4}
+              strokeWidth={2}
+            />
+          )}
+        </svg>
       </button>
       <button
         className={css.blobControl}

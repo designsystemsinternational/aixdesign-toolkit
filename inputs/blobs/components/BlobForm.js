@@ -18,7 +18,8 @@ Google Open Images Dataset
 export const BlobForm = ({ onLoadBlob }) => {
   const [inputValue, setInputValue] = React.useState("");
   const [error, setError] = React.useState("");
-  const [color, setColor] = React.useState("#4874FD");
+  const [fill, setFill] = React.useState("#4874FD");
+  const [stroke, setStroke] = React.useState("#486CB3");
   const [isLoading, setIsLoading] = React.useState(false);
   const [loadedObject, setLoadedObject] = React.useState(null);
   const showPreview = loadedObject != null;
@@ -126,11 +127,22 @@ export const BlobForm = ({ onLoadBlob }) => {
       <div className={css.loadingSection}>
         {showPreview && (
           <>
+            <div className={css.colorSelectorContainer}>
+              <ColorSelector value={fill} onChange={setFill} size={20} />
+            </div>
+            <div className={css.colorSelectorContainer}>
+              <ColorSelector value={stroke} onChange={setStroke} size={20} />
+            </div>
             <h2>Preview</h2>
             <div className={css.previews}>
               <svg viewBox={loadedObject.svgData.viewBox}>
                 <image xlinkHref={loadedObject.href} />{" "}
-                <path d={loadedObject.path} fill={color} />
+                <path
+                  d={loadedObject.path}
+                  fill={fill}
+                  stroke={stroke}
+                  strokeWidth="5"
+                />
               </svg>
               <svg viewBox={loadedObject.svgData.viewBox}>
                 <defs>
@@ -138,18 +150,31 @@ export const BlobForm = ({ onLoadBlob }) => {
                     <path d={loadedObject.path} />
                   </clipPath>
                 </defs>
+                <rect
+                  width={loadedObject.svgData.width}
+                  height={loadedObject.svgData.height}
+                  fill="white"
+                />
                 <image xlinkHref={loadedObject.href} clipPath="url(#clip)" />
               </svg>
               <svg viewBox={loadedObject.svgData.viewBox}>
-                <path d={loadedObject.path} fill={color} />
+                <rect
+                  width={loadedObject.svgData.width}
+                  height={loadedObject.svgData.height}
+                  fill="white"
+                />
+                <path
+                  d={loadedObject.path}
+                  fill={fill}
+                  stroke={stroke}
+                  strokeWidth="5"
+                />
               </svg>
             </div>
-            <div className={css.colorSelectorContainer}>
-              <ColorSelector value={color} onChange={setColor} />
-            </div>
+
             <Button
               onClick={() => {
-                onLoadBlob({ ...loadedObject, fill: color });
+                onLoadBlob({ ...loadedObject, fill, stroke });
                 setLoadedObject(null);
               }}
             >

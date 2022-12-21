@@ -78,7 +78,7 @@ export const Input = ({ name, values, onChange }) => {
 
   return (
     <div className={css.container}>
-      <label>Blobs</label>
+      <label>Blob background</label>
       <div className={css.blobContainer}>
         {blobs.length === 0 ? (
           <p>No blobs loaded!</p>

@@ -3,6 +3,12 @@
   margin-bottom: 1em;
 }
 
+.container label {
+  font-size: var(--mechanic-label-font-size);
+  margin-bottom: 0.5em;
+  margin-left: 0.25em;
+}
+
 .newBlobContainer {
   display: flex;
   justify-content: center;
@@ -16,9 +22,9 @@
 
 .newBlob {
   border: 1px solid currentColor;
-  padding: 0.2em 0.5em;
+  padding: 0.2em 0.7em;
   border-radius: var(--mechanic-input-height-half);
-  font-family: var(--mechanic-input-font);
+  font-family: 'MaccabiBlock', sans-serif;
   background: transparent;
   display: flex;
   justify-content: center;

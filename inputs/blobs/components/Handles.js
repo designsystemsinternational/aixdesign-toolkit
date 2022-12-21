@@ -43,7 +43,7 @@ export const Handles = ({ ratio, blob }) => {
           transform: `rotate(${rotate}deg)`
         }}
       />
-      <div
+      {/* <div
         id="handle-n"
         className={css.handle}
         style={{
@@ -55,8 +55,8 @@ export const Handles = ({ ratio, blob }) => {
           transform: `rotate(${rotate}deg)`,
           transformOrigin: `${width / 2}px ${halfHandleSize + height / 2}px`
         }}
-      />
-      <div
+      /> */}
+      {/* <div
         id="handle-e"
         className={css.handle}
         style={{
@@ -70,7 +70,7 @@ export const Handles = ({ ratio, blob }) => {
             height / 2
           }px`
         }}
-      />
+      /> */}
       <div
         id="handle-nerot"
         className={css.handle}
@@ -101,7 +101,7 @@ export const Handles = ({ ratio, blob }) => {
           }px`
         }}
       />
-      <div
+      {/* <div
         id="handle-s"
         className={css.handle}
         style={{
@@ -115,7 +115,7 @@ export const Handles = ({ ratio, blob }) => {
             -height / 2 + (halfHandleSize + 1)
           }px`
         }}
-      />
+      /> */}
       <div
         id="handle-serot"
         className={css.handle}
@@ -146,7 +146,7 @@ export const Handles = ({ ratio, blob }) => {
           }px`
         }}
       />
-      <div
+      {/* <div
         id="handle-w"
         className={css.handle}
         style={{
@@ -158,7 +158,7 @@ export const Handles = ({ ratio, blob }) => {
           transform: `rotate(${rotate}deg)`,
           transformOrigin: `${width / 2 + halfHandleSize}px ${height / 2}px`
         }}
-      />
+      /> */}
       <div
         id="handle-swrot"
         className={css.handle}
