@@ -1,43 +1,62 @@
 import React from "react";
 
-export const getGridDimensions = (size, rows = 6, cols = 6, img = [0, 0]) => {
-  const width = size;
-  const height = size;
-  const gridSize = size / 6;
-  const marginSize = gridSize / 3;
-  const [col0, col1, col2, col3, col4, col5, col6] = [
+const horizontalOptions = ["right", "left"];
+const verticalOptions = ["top", "bottom"];
+
+export const getGridDimensions = (
+  width,
+  height,
+  imagePosition,
+  imageSize,
+  rows = 6,
+  cols = 6
+) => {
+  const rowSize = height / rows;
+  const colSize = width / cols;
+  const verticalMarginSize = rowSize / 3;
+  const horizontalMarginSize = colSize / 3;
+
+  const availableRows = Math.max(
     0,
-    gridSize,
-    gridSize * 2,
-    gridSize * 3,
-    gridSize * 4,
-    gridSize * 5,
-    size
-  ];
-  const [row0, row1, row2, row3, row4, row5, row6] = [
+    rows - (verticalOptions.includes(imagePosition) ? imageSize : 0)
+  );
+  const availableCols = Math.max(
     0,
-    gridSize,
-    gridSize * 2,
-    gridSize * 3,
-    gridSize * 4,
-    gridSize * 5,
-    size
-  ];
+    cols - (horizontalOptions.includes(imagePosition) ? imageSize : 0)
+  );
+
+  const xOffset = imagePosition === "left" ? imageSize * colSize : 0;
+  const yOffset = imagePosition === "top" ? imageSize * rowSize : 0;
+  const columns = [];
+
+  for (let col = 0; col < availableCols + 1; col++) {
+    columns.push(colSize * col + xOffset);
+  }
+  const rowss = [];
+  for (let row = 0; row < availableRows + 1; row++) {
+    rowss.push(rowSize * row + yOffset);
+  }
+
   const [top, right, bottom, left] = [
-    marginSize,
-    size - marginSize,
-    size - marginSize,
-    marginSize
+    verticalMarginSize + (imagePosition === "top" ? imageSize * rowSize : 0),
+    (imagePosition === "right" ? availableCols * colSize : width) -
+      horizontalMarginSize,
+    (imagePosition === "bottom" ? availableRows * rowSize : height) -
+      verticalMarginSize,
+    horizontalMarginSize + (imagePosition === "left" ? imageSize * colSize : 0)
   ];
+
   return {
-    cols: [col0, col1, col2, col3, col4, col5, col6],
-    rows: [row0, row1, row2, row3, row4, row5, row6],
+    cols: columns,
+    rows: rowss,
     top,
     right,
     bottom,
     left,
     width,
-    height
+    height,
+    rowSize,
+    colSize
   };
 };
 
@@ -45,17 +64,49 @@ export const Grid = ({ className, grid, opacity = 0.13 }) => {
   return (
     <svg className={className} width={grid.width} height={grid.height}>
       <g fill={`rgba(252, 102, 83, ${opacity})`}>
-        <rect width={grid.width} height={grid.top} />
-        <rect width={grid.left} height={grid.height} />
-        <rect width={grid.width} height={grid.top} y={grid.bottom} />
-        <rect width={grid.left} height={grid.height} x={grid.right} />
+        <rect
+          width={grid.cols[grid.cols.length - 1]}
+          height={grid.top - grid.rows[0]}
+          y={grid.rows[0]}
+          x={grid.cols[0]}
+        />
+        <rect
+          width={grid.left - grid.cols[0]}
+          height={grid.rows[grid.rows.length - 1]}
+          y={grid.rows[0]}
+          x={grid.cols[0]}
+        />
+        <rect
+          width={grid.cols[grid.cols.length - 1]}
+          height={grid.top}
+          y={grid.bottom}
+          x={grid.cols[0]}
+        />
+        <rect
+          width={grid.cols[grid.cols.length - 1] - grid.right}
+          height={grid.rows[grid.rows.length - 1]}
+          x={grid.right}
+          y={grid.rows[0]}
+        />
       </g>
       <g stroke={`rgba(252, 102, 83, ${opacity})`}>
         {grid.cols.map(col => (
-          <line x1={col} x2={col} y1={0} y2={grid.height} />
+          <line
+            key={col}
+            x1={col}
+            x2={col}
+            y1={grid.rows[0]}
+            y2={grid.rows[grid.rows.length - 1]}
+          />
         ))}
         {grid.rows.map(row => (
-          <line y1={row} y2={row} x1={0} x2={grid.width} />
+          <line
+            key={row}
+            y1={row}
+            y2={row}
+            x1={grid.cols[0]}
+            x2={grid.cols[grid.cols.length - 1]}
+          />
         ))}
       </g>
     </svg>

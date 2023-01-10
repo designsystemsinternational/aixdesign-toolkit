@@ -3,11 +3,14 @@
 .blobElement {
   display: flex;
   align-items: center;
-  padding: 0.5em 0;
+  justify-content: space-between;
+  padding: 0.5em;
+  cursor: pointer;
 }
 
-.blobElement + .blobElement {
-  border-top: 1px solid currentColor;
+.blobControlContainer {
+  display: flex;
+  align-items: center;
 }
 
 .blobControl {
@@ -21,21 +24,17 @@
   align-items: center;
   cursor: pointer;
   stroke: black;
-  stroke-width: 1px;
+  fill: black;
+  stroke-width: 0.5px;
 }
-
-.blobControl + .blobControl {
-  margin-left: 5px;
-}
-
 
 .blobControl:disabled {
   stroke: #cccccc;
+  fill: #cccccc;
   cursor: not-allowed;
 }
 
 .blobSvg {
   height: 60px;
-  margin-left: 2em;
   border: 1px solid black;
 }

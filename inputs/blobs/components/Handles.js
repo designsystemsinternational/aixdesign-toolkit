@@ -35,7 +35,7 @@ export const Handles = ({ ratio, blob }) => {
         id="handle-body"
         className={css.handle}
         style={{
-          border: "1px dashed black",
+          border: "2px dashed black",
           left: x0,
           top: y0,
           height: height,
