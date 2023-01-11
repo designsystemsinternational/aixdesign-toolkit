@@ -43,34 +43,6 @@ export const Handles = ({ ratio, blob }) => {
           transform: `rotate(${rotate}deg)`
         }}
       />
-      {/* <div
-        id="handle-n"
-        className={css.handle}
-        style={{
-          border: debug ? "1px dashed black" : "",
-          left: x0,
-          top: y0 - halfHandleSize,
-          height: handleSize,
-          width: width,
-          transform: `rotate(${rotate}deg)`,
-          transformOrigin: `${width / 2}px ${halfHandleSize + height / 2}px`
-        }}
-      /> */}
-      {/* <div
-        id="handle-e"
-        className={css.handle}
-        style={{
-          border: debug ? "1px dashed black" : "",
-          left: x0 + width - (halfHandleSize + 1),
-          top: y0,
-          height: height,
-          width: handleSize,
-          transform: `rotate(${rotate}deg)`,
-          transformOrigin: `${-width / 2 + (halfHandleSize + 1)}px ${
-            height / 2
-          }px`
-        }}
-      /> */}
       <div
         id="handle-nerot"
         className={css.handle}
@@ -101,21 +73,6 @@ export const Handles = ({ ratio, blob }) => {
           }px`
         }}
       />
-      {/* <div
-        id="handle-s"
-        className={css.handle}
-        style={{
-          border: debug ? "1px dashed black" : "",
-          left: x0,
-          top: y0 + height - (halfHandleSize + 1),
-          height: handleSize,
-          width: width,
-          transform: `rotate(${rotate}deg)`,
-          transformOrigin: `${width / 2}px ${
-            -height / 2 + (halfHandleSize + 1)
-          }px`
-        }}
-      /> */}
       <div
         id="handle-serot"
         className={css.handle}
@@ -146,19 +103,6 @@ export const Handles = ({ ratio, blob }) => {
           }px`
         }}
       />
-      {/* <div
-        id="handle-w"
-        className={css.handle}
-        style={{
-          border: debug ? "1px dashed black" : "",
-          left: x0 - halfHandleSize,
-          top: y0,
-          height: height,
-          width: handleSize,
-          transform: `rotate(${rotate}deg)`,
-          transformOrigin: `${width / 2 + halfHandleSize}px ${height / 2}px`
-        }}
-      /> */}
       <div
         id="handle-swrot"
         className={css.handle}
@@ -342,7 +286,8 @@ export const HandleContainer = ({
   offset,
   blob,
   children,
-  onUpdateBlob
+  onUpdateBlob,
+  onUnselectBlob
 }) => {
   const [cursor, setCursor] = React.useState({ x: null, y: null });
   const [cursorId, setCursorId] = React.useState(null);
@@ -361,7 +306,7 @@ export const HandleContainer = ({
   };
 
   const cursorClass =
-    cursorId != null && cursorId.includes("-")
+    cursorId != null && cursorId.includes("-") && !cursorId.includes("shadow")
       ? camelCase(`cursor-${cursorId.split("-")[1]}`)
       : "";
 
@@ -374,10 +319,15 @@ export const HandleContainer = ({
         top: offset.top,
         left: offset.left,
         width: width,
-        height: height
+        height: height,
+        cursor: blob ? "none" : "default"
       }}
       onMouseDown={e => {
         if (e.target.id != null) {
+          if (["wrapper", "cursor", "shadow-svg"].includes(e.target.id)) {
+            onUnselectBlob();
+            return;
+          }
           const { x, y } = getEventCoordinates(e);
           setInitialCoordinate({ x, y });
           setBlobReference({ ...blob });
@@ -430,17 +380,22 @@ export const HandleContainer = ({
         setCursorId(null);
       }}
     >
-      {cursor.x != null && cursor.y != null && (
-        <div
-          id="cursor"
-          className={cn(css.cursor, css[cursorClass])}
-          style={{
-            left: cursor.x,
-            top: cursor.y,
-            transform: cursorClass ? `rotate(${blob.rotate}deg)` : ""
-          }}
-        />
-      )}
+      {blob &&
+        cursorId != null &&
+        !cursorId.includes("path") &&
+        cursor.x != null &&
+        cursor.y != null && (
+          <div
+            id="cursor"
+            className={cn(css.cursor, css[cursorClass])}
+            style={{
+              left: cursor.x,
+              top: cursor.y,
+              transform:
+                cursorClass !== "" && blob ? `rotate(${blob.rotate}deg)` : ""
+            }}
+          />
+        )}
       {children}
     </div>
   );

@@ -24,6 +24,13 @@ export const Input = ({ name, values, onChange }) => {
 
   const [openModal, setOpenModal] = React.useState(false);
 
+  const selectBlob = index => {
+    onChange(null, name, {
+      blobs,
+      selected: selected !== index ? index : -1
+    });
+  };
+
   const moveBlob = (index1, index2) => {
     if (index2 < 0 || index2 >= blobs.length) return;
     const copy = [...blobs];
@@ -101,12 +108,7 @@ export const Input = ({ name, values, onChange }) => {
               blob={blob}
               disableMoveUp={index === 0}
               disableMoveDown={index === blobs.length - 1}
-              onClick={() =>
-                onChange(null, name, {
-                  blobs,
-                  selected: selected !== index ? index : -1
-                })
-              }
+              onClick={() => selectBlob(index)}
               onMoveUp={() => moveBlob(index, index - 1)}
               onMoveDown={() => moveBlob(index, index + 1)}
               onRemove={() => removeBlob(index)}
@@ -128,35 +130,58 @@ export const Input = ({ name, values, onChange }) => {
 
       {mainRef.current &&
         ReactDOM.createPortal(
-          selected > -1 && (
-            <HandleContainer
-              ratio={ratio}
-              width={width}
-              height={height}
-              offset={{ top: "1em", left: "1em" }}
-              blob={blobs[selected]}
-              onUpdateBlob={changes => {
-                const blobsCopy = [...blobs];
-                let selectedBlobCopy = {
-                  ...blobs[selected]
-                };
-                if (changes.scaleX && changes.scaleX <= 0) return;
-                if (changes.scaleY && changes.scaleY <= 0) return;
-                selectedBlobCopy = {
-                  ...selectedBlobCopy,
-                  ...changes
-                };
-                updateBlobTransform(selectedBlobCopy);
-                blobsCopy[selected] = selectedBlobCopy;
-                onChange(null, name, { blobs: blobsCopy, selected });
-              }}
-            >
+          <HandleContainer
+            ratio={ratio}
+            width={width}
+            height={height}
+            offset={{ top: "1em", left: "1em" }}
+            blob={selected > -1 ? blobs[selected] : null}
+            onUpdateBlob={changes => {
+              const blobsCopy = [...blobs];
+              let selectedBlobCopy = {
+                ...blobs[selected]
+              };
+              if (changes.scaleX && changes.scaleX <= 0) return;
+              if (changes.scaleY && changes.scaleY <= 0) return;
+              selectedBlobCopy = {
+                ...selectedBlobCopy,
+                ...changes
+              };
+              updateBlobTransform(selectedBlobCopy);
+              blobsCopy[selected] = selectedBlobCopy;
+              onChange(null, name, { blobs: blobsCopy, selected });
+            }}
+            onUnselectBlob={() => selectBlob(-1)}
+          >
+            {
+              <svg
+                id="shadow-svg"
+                style={{ position: "absolute", top: 0, left: 0, width, height }}
+              >
+                <g transform={`scale(${ratio})`}>
+                  {blobs.map(({ path, transform }, index) => (
+                    <path
+                      key={index}
+                      d={path}
+                      id={`shadow-path-${index}`}
+                      fill="transparent"
+                      stroke="transparent"
+                      strokeWidth={0}
+                      transform={transform}
+                      style={{ cursor: "pointer" }}
+                      onClick={() => selectBlob(index)}
+                    />
+                  ))}
+                </g>
+              </svg>
+            }
+            {selected > -1 && (
               <Handles
                 ratio={ratio}
                 blob={selected > -1 ? blobs[selected] : null}
               />
-            </HandleContainer>
-          ),
+            )}
+          </HandleContainer>,
           mainRef.current
         )}
     </div>
