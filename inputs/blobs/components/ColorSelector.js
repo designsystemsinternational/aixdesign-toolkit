@@ -1,4 +1,7 @@
 import React from "react";
+import cn from "classnames";
+
+import * as css from "./ColorSelector.module.css";
 
 import { colors } from "../../../identity/colors";
 
@@ -11,22 +14,15 @@ export const ColorSelector = ({
   size = 30
 }) => {
   return (
-    <div>
+    <div className={css.root}>
       {options.map(colorArray => (
-        <div style={{ display: "flex" }}>
-          {colorArray.map(color => (
+        <div className={css.row}>
+          {colorArray.map((color, index) => (
             <div
-              style={{
-                width: size,
-                height: size,
-                background: color,
-                borderRadius: 5,
-                margin: 1,
-                borderStyle: "solid",
-                borderWidth: 1,
-                borderColor: value === color ? "black" : "#C1C1C1"
-              }}
+              key={index}
+              className={cn(css.color, { [css.selected]: value === color })}
               onClick={() => onChange(color)}
+              style={{ height: size, background: color }}
             />
           ))}
         </div>

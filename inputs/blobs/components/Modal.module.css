@@ -12,5 +12,8 @@
 
 .dialog {
   position: absolute;
-  inset: 10%;
+  min-width: 500px;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
 }

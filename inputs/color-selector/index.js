@@ -21,6 +21,7 @@ export const Input = ({ name, values, onChange }) => {
         <ColorSelector
           value={color}
           onChange={value => onChange(null, name, value)}
+          size="1.5em"
         />
       </div>
     </div>
