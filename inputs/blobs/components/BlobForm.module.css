@@ -8,6 +8,10 @@
   flex-direction: column;
 }
 
+.root h2 {
+  margin-top: 0;
+}
+
 .errorMessage {
   margin-top: 0;
   color: red;
@@ -22,7 +26,6 @@
 .blobInput {
   margin-bottom: 1em;
   border-radius: 20px;
-  /* width: 200px; */
   border: 1px solid black;
   resize: none;
   padding: 10px;

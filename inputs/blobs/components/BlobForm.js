@@ -28,14 +28,18 @@ const FirstStep = ({ onNextStep, setLoadedObject }) => {
       <p>
         To do so, first you need to add a bookmark to your browser. You can do
         so saving or dragging the following link your bookmarks:{" "}
-        <a href={bookletCode}>Toolkit helper</a>. You only need to this step
-        once.
+        <a href={bookletCode}>AIxDesign Toolkit helper</a>. You only need to
+        this step once.
       </p>
       <p>
         Then, go to{" "}
         <span dangerouslySetInnerHTML={{ __html: toolkitHelperCode }} />, go
         through the roaster, click to preview the blob you want to add, and
         while on preview mode click on the bookmark helper.
+      </p>
+      <p>
+        Then copy over the blob code you'll get from the helper and press the
+        button:
       </p>
       <textarea
         className={css.blobInput}
@@ -53,7 +57,7 @@ const FirstStep = ({ onNextStep, setLoadedObject }) => {
             setError("");
             onNextStep();
           } catch (e) {
-            setError("Error loading blob! Did you copy over the correct data?");
+            setError("Error loading blob! Did you copy over the correct code?");
             console.error(e);
           }
         }}
@@ -141,6 +145,7 @@ const SecondStep = ({
       <div className={css.previews}>
         <svg
           viewBox={`0 0 ${loadedObject.pathExtent.width} ${loadedObject.pathExtent.height}`}
+          height={200}
         >
           <g transform={loadedObject.transform}>
             <path

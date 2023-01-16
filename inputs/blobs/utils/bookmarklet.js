@@ -1,9 +1,15 @@
 javascript: (function () {
   const canCopyConClipboard = navigator?.clipboard?.writeText != null;
 
-  navigator.clipboard.writeText("HEY");
-
   const svgString = document.getElementById("viewer_svg").outerHTML;
+  const pathSvgString = document.getElementById("viewer_im_segm0");
+
+  const existingModal = document.getElementById("modal");
+
+  if (existingModal) {
+    let body = document.getElementsByTagName("body")[0];
+    body.removeChild(modalContainer);
+  }
 
   const modalContainer = document.createElement("div");
   modalContainer.id = "modal";
@@ -15,25 +21,31 @@ javascript: (function () {
 
   const dialog = document.createElement("div");
   dialog.style =
-    "position: absolute;inset: 20%; background: #ccc; display: flex; flex-direction: column; justify-content: center; align-items: center; border-radius: 12px;";
+    "position: absolute; top: 50%; left: 50%; transform: translateX(-50%) translateY(-50%); min-width: 500px; padding: 2em; background: #ccc; display: flex; flex-direction: column; justify-content: center; align-items: center; border-radius: 12px; font-family: sans-serif;";
   modalContainer.appendChild(dialog);
 
   let textContent =
-    "Copy the text in the textarea below me and paste it in the toolkit!";
+    "Copy the text in the textarea below and paste it in the toolkit!";
 
-  if (canCopyConClipboard) {
+  if (!pathSvgString) {
+    textContent =
+      "Coudn't detect a blob preview. Make sure you click on the blob before calling the helper!";
+  } else if (canCopyConClipboard) {
     navigator.clipboard.writeText(svgString);
     textContent =
-      "The following blob SVG data just got copied into your clipboard! Go paste it in the toolkit.";
+      "The blob code just got copied into your clipboard! Go paste it in the toolkit.";
   }
 
   const parrafo = document.createElement("p");
   parrafo.textContent = textContent;
   dialog.appendChild(parrafo);
 
-  const textarea = document.createElement("textarea");
-  textarea.value = svgString;
-  dialog.appendChild(textarea);
+  if (pathSvgString) {
+    const textarea = document.createElement("textarea");
+    textarea.readOnly = true;
+    textarea.value = svgString;
+    dialog.appendChild(textarea);
+  }
 
   const body = document.getElementsByTagName("body")[0];
 
@@ -42,12 +54,41 @@ javascript: (function () {
   };
 
   const closeButton = document.createElement("button");
-  closeButton.style = "margin: 1em";
+  closeButton.style =
+    "position: absolute; top: 1em; right: 1em; display: flex; justify-content: center; align-items: center; background: transparent; border: none;";
+
+  const closeSVG = document.createElementNS(
+    "http://www.w3.org/2000/svg",
+    "svg"
+  );
+  const closePath1 = document.createElementNS(
+    "http://www.w3.org/2000/svg",
+    "path"
+  );
+  const closePath2 = document.createElementNS(
+    "http://www.w3.org/2000/svg",
+    "path"
+  );
+  closeSVG.setAttribute("width", "20px");
+  closeSVG.setAttribute("viewBox", "0 0 20 20");
+  closePath1.setAttribute(
+    "d",
+    "M14.776,10c0,0.239-0.195,0.434-0.435,0.434H5.658c-0.239,0-0.434-0.195-0.434-0.434s0.195-0.434,0.434-0.434h8.684C14.581,9.566,14.776,9.762,14.776,10 M18.25,10c0,4.558-3.693,8.25-8.25,8.25c-4.557,0-8.25-3.691-8.25-8.25c0-4.557,3.693-8.25,8.25-8.25C14.557,1.75,18.25,5.443,18.25,10 M17.382,10c0-4.071-3.312-7.381-7.382-7.381C5.929,2.619,2.619,5.93,2.619,10c0,4.07,3.311,7.382,7.381,7.382C14.07,17.383,17.382,14.07,17.382,10"
+  );
+  closePath1.setAttribute("transform", "rotate(45 10 10)");
+  closePath2.setAttribute(
+    "d",
+    "M14.776,10c0,0.239-0.195,0.434-0.435,0.434H5.658c-0.239,0-0.434-0.195-0.434-0.434s0.195-0.434,0.434-0.434h8.684C14.581,9.566,14.776,9.762,14.776,10 M18.25,10c0,4.558-3.693,8.25-8.25,8.25c-4.557,0-8.25-3.691-8.25-8.25c0-4.557,3.693-8.25,8.25-8.25C14.557,1.75,18.25,5.443,18.25,10 M17.382,10c0-4.071-3.312-7.381-7.382-7.381C5.929,2.619,2.619,5.93,2.619,10c0,4.07,3.311,7.382,7.381,7.382C14.07,17.383,17.382,14.07,17.382,10"
+  );
+  closePath2.setAttribute("transform", "rotate(135 10 10)");
+
+  closeSVG.appendChild(closePath1);
+  closeSVG.appendChild(closePath2);
+  closeButton.appendChild(closeSVG);
 
   closeButton.addEventListener("click", closeModal);
   backdrop.addEventListener("click", closeModal);
 
-  closeButton.textContent = "Close this window after coping!";
   dialog.appendChild(closeButton);
 
   body.appendChild(modalContainer);
@@ -56,9 +97,15 @@ javascript: (function () {
 export const bookletCode = `javascript: (function () {
   const canCopyConClipboard = navigator?.clipboard?.writeText != null;
 
-  navigator.clipboard.writeText("HEY");
-
   const svgString = document.getElementById("viewer_svg").outerHTML;
+  const pathSvgString = document.getElementById("viewer_im_segm0");
+
+  const existingModal = document.getElementById("modal");
+
+  if (existingModal) {
+    let body = document.getElementsByTagName("body")[0];
+    body.removeChild(modalContainer);
+  }
 
   const modalContainer = document.createElement("div");
   modalContainer.id = "modal";
@@ -70,25 +117,31 @@ export const bookletCode = `javascript: (function () {
 
   const dialog = document.createElement("div");
   dialog.style =
-    "position: absolute;inset: 20%; background: #ccc; display: flex; flex-direction: column; justify-content: center; align-items: center; border-radius: 12px;";
+    "position: absolute; top: 50%; left: 50%; transform: translateX(-50%) translateY(-50%); min-width: 500px; padding: 2em; background: #ccc; display: flex; flex-direction: column; justify-content: center; align-items: center; border-radius: 12px; font-family: sans-serif;";
   modalContainer.appendChild(dialog);
 
   let textContent =
-    "Copy the text in the textarea below me and paste it in the toolkit!";
+    "Copy the text in the textarea below and paste it in the toolkit!";
 
-  if (canCopyConClipboard) {
+  if (!pathSvgString) {
+    textContent =
+      "Coudn't detect a blob preview. Make sure you click on the blob before calling the helper!";
+  } else if (canCopyConClipboard) {
     navigator.clipboard.writeText(svgString);
     textContent =
-      "The following blob SVG data just got copied into your clipboard! Go paste it in the toolkit.";
+      "The blob code just got copied into your clipboard! Go paste it in the toolkit.";
   }
 
   const parrafo = document.createElement("p");
   parrafo.textContent = textContent;
   dialog.appendChild(parrafo);
 
-  const textarea = document.createElement("textarea");
-  textarea.value = svgString;
-  dialog.appendChild(textarea);
+  if (pathSvgString) {
+    const textarea = document.createElement("textarea");
+    textarea.readOnly = true;
+    textarea.value = svgString;
+    dialog.appendChild(textarea);
+  }
 
   const body = document.getElementsByTagName("body")[0];
 
@@ -97,12 +150,41 @@ export const bookletCode = `javascript: (function () {
   };
 
   const closeButton = document.createElement("button");
-  closeButton.style = "margin: 1em";
+  closeButton.style =
+    "position: absolute; top: 1em; right: 1em; display: flex; justify-content: center; align-items: center; background: transparent; border: none;";
+
+  const closeSVG = document.createElementNS(
+    "http://www.w3.org/2000/svg",
+    "svg"
+  );
+  const closePath1 = document.createElementNS(
+    "http://www.w3.org/2000/svg",
+    "path"
+  );
+  const closePath2 = document.createElementNS(
+    "http://www.w3.org/2000/svg",
+    "path"
+  );
+  closeSVG.setAttribute("width", "20px");
+  closeSVG.setAttribute("viewBox", "0 0 20 20");
+  closePath1.setAttribute(
+    "d",
+    "M14.776,10c0,0.239-0.195,0.434-0.435,0.434H5.658c-0.239,0-0.434-0.195-0.434-0.434s0.195-0.434,0.434-0.434h8.684C14.581,9.566,14.776,9.762,14.776,10 M18.25,10c0,4.558-3.693,8.25-8.25,8.25c-4.557,0-8.25-3.691-8.25-8.25c0-4.557,3.693-8.25,8.25-8.25C14.557,1.75,18.25,5.443,18.25,10 M17.382,10c0-4.071-3.312-7.381-7.382-7.381C5.929,2.619,2.619,5.93,2.619,10c0,4.07,3.311,7.382,7.381,7.382C14.07,17.383,17.382,14.07,17.382,10"
+  );
+  closePath1.setAttribute("transform", "rotate(45 10 10)");
+  closePath2.setAttribute(
+    "d",
+    "M14.776,10c0,0.239-0.195,0.434-0.435,0.434H5.658c-0.239,0-0.434-0.195-0.434-0.434s0.195-0.434,0.434-0.434h8.684C14.581,9.566,14.776,9.762,14.776,10 M18.25,10c0,4.558-3.693,8.25-8.25,8.25c-4.557,0-8.25-3.691-8.25-8.25c0-4.557,3.693-8.25,8.25-8.25C14.557,1.75,18.25,5.443,18.25,10 M17.382,10c0-4.071-3.312-7.381-7.382-7.381C5.929,2.619,2.619,5.93,2.619,10c0,4.07,3.311,7.382,7.381,7.382C14.07,17.383,17.382,14.07,17.382,10"
+  );
+  closePath2.setAttribute("transform", "rotate(135 10 10)");
+
+  closeSVG.appendChild(closePath1);
+  closeSVG.appendChild(closePath2);
+  closeButton.appendChild(closeSVG);
 
   closeButton.addEventListener("click", closeModal);
   backdrop.addEventListener("click", closeModal);
 
-  closeButton.textContent = "Close this window after coping!";
   dialog.appendChild(closeButton);
 
   body.appendChild(modalContainer);
