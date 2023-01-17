@@ -3,7 +3,8 @@ import React from "react";
 import { Button } from "@mechanic-design/ui-components";
 
 import { parseBlob } from "../utils/parse-blob.js";
-import { bookletCode } from "../utils/bookmarklet.js";
+// import { bookmarkletCode } from "../utils/bookmarklet.js";
+import { bookmarkletCode } from "../utils/bookmarklet.new.js";
 import { ColorSelector } from "./ColorSelector";
 
 import * as css from "./BlobForm.module.css";
@@ -24,12 +25,15 @@ const FirstStep = ({ onNextStep, setLoadedObject }) => {
 
   return (
     <div className={css.setupSection}>
-      <h2>Add an Open Images blob!</h2>
+      <h2>Use this bookmarklet to insert an Open Images blob</h2>
       <p>
-        To do so, first you need to add a bookmark to your browser. You can do
-        so saving or dragging the following link your bookmarks:{" "}
-        <a href={bookletCode}>AIxDesign Toolkit helper</a>. You only need to
-        this step once.
+        Add this bookmarklet to your browser by dragging the following link your
+        bookmarks. You only need to this step once.
+      </p>
+      <p>
+        <a className={css.bookmarklet} href={bookmarkletCode}>
+          AIxDesign Toolkit helper
+        </a>
       </p>
       <p>
         Then, go to{" "}

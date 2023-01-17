@@ -5,7 +5,8 @@
     "dev": "mechanic dev",
     "build": "mechanic build",
     "serve": "mechanic serve",
-    "new": "mechanic new function"
+    "new": "mechanic new function",
+    "bookmarklet": "echo 'export const bookmarkletCode = `' > inputs/blobs/utils/bookmarklet.new.js && cat inputs/blobs/utils/bookmarklet.raw.js >> inputs/blobs/utils/bookmarklet.new.js && truncate -s -3  inputs/blobs/utils/bookmarklet.new.js && echo '.call(this));`;' >> inputs/blobs/utils/bookmarklet.new.js"
   },
   "devDependencies": {
     "@mechanic-design/cli": "^2.0.0-beta.9",

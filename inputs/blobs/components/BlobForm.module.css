@@ -1,8 +1,8 @@
 .root {
   border-radius: 20px;
   border: 1px solid black;
-  background: var(--mechanic-dust-gray);
-  font-family: 'MaccabiBlock', sans-serif;
+  background: white;
+  font-family: "MaccabiBlock", sans-serif;
   padding: 1.5em;
   display: flex;
   flex-direction: column;
@@ -10,6 +10,21 @@
 
 .root h2 {
   margin-top: 0;
+}
+
+.bookmarklet {
+  background-color: #eaeaea;
+  color: black;
+  text-decoration: none;
+  padding: 8px 16px;
+  border-radius: 16px;
+
+  &:hover {
+    background-color: #dadada;
+  }
+  &:active {
+    background-color: #ff0;
+  }
 }
 
 .errorMessage {
@@ -39,7 +54,7 @@
 
 .colors {
   display: flex;
-  gap: 20px
+  gap: 20px;
 }
 
 .colorSelectorContainer {

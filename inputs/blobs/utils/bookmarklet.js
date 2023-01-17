@@ -29,11 +29,11 @@ javascript: (function () {
 
   if (!pathSvgString) {
     textContent =
-      "Coudn't detect a blob preview. Make sure you click on the blob before calling the helper!";
+      "Couldn't detect a blob preview. Make sure you click on the blob before calling the helper!";
   } else if (canCopyConClipboard) {
     navigator.clipboard.writeText(svgString);
     textContent =
-      "The blob code just got copied into your clipboard! Go paste it in the toolkit.";
+      "The blob code was just copied into your clipboard. Go paste it in the toolkit : )";
   }
 
   const mainMessage = document.createElement("p");
@@ -44,7 +44,7 @@ javascript: (function () {
   if (pathSvgString) {
     const copyInstructions = document.createElement("p");
     copyInstructions.textContent =
-      "If you want to copy it again, you can get it in the textarea below. Just triple click and copy.";
+      "If you want to copy it again, you can get it from the textarea below. Just triple click and copy.";
     copyInstructions.style = "margin: 1em 0; font-size: smaller;";
     dialog.appendChild(copyInstructions);
 
@@ -104,7 +104,7 @@ javascript: (function () {
   body.appendChild(modalContainer);
 });
 
-export const bookletCode = `javascript: (function () {
+export const bookmarkletCode = `javascript: (function () {
   const canCopyConClipboard = navigator?.clipboard?.writeText != null;
 
   const svgString = document.getElementById("viewer_svg").outerHTML;
@@ -135,7 +135,7 @@ export const bookletCode = `javascript: (function () {
 
   if (!pathSvgString) {
     textContent =
-      "Coudn't detect a blob preview. Make sure you click on the blob before calling the helper!";
+      "Couldn't detect a blob preview. Make sure you click on the blob before calling the helper!";
   } else if (canCopyConClipboard) {
     navigator.clipboard.writeText(svgString);
     textContent =
