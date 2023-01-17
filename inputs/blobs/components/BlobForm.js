@@ -43,7 +43,7 @@ const FirstStep = ({ onNextStep, setLoadedObject }) => {
       </p>
       <textarea
         className={css.blobInput}
-        rows="5"
+        rows="3"
         value={inputValue}
         onChange={e => setInputValue(e.target.value)}
       />
@@ -89,7 +89,7 @@ const SecondStep = ({
       </Button>
       <p>Loaded blob and image:</p>
       <div className={css.previews}>
-        <svg viewBox={loadedObject.svgData.viewBox}>
+        <svg viewBox={loadedObject.svgData.viewBox} height={100}>
           <image xlinkHref={loadedObject.href} />{" "}
           <path
             d={loadedObject.path}
@@ -99,7 +99,7 @@ const SecondStep = ({
           />
         </svg>
 
-        <svg viewBox={loadedObject.svgData.viewBox}>
+        <svg viewBox={loadedObject.svgData.viewBox} height={100}>
           <defs>
             <clipPath id="clip">
               <path d={loadedObject.path} />
@@ -113,7 +113,7 @@ const SecondStep = ({
           <image xlinkHref={loadedObject.href} clipPath="url(#clip)" />
         </svg>
 
-        <svg viewBox={loadedObject.svgData.viewBox}>
+        <svg viewBox={loadedObject.svgData.viewBox} height={100}>
           <rect
             width={loadedObject.svgData.width}
             height={loadedObject.svgData.height}
@@ -145,7 +145,7 @@ const SecondStep = ({
       <div className={css.previews}>
         <svg
           viewBox={`0 0 ${loadedObject.pathExtent.width} ${loadedObject.pathExtent.height}`}
-          height={200}
+          height={150}
         >
           <g transform={loadedObject.transform}>
             <path
