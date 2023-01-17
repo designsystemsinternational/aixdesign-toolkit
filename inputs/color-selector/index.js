@@ -16,7 +16,7 @@ export const Input = ({ name, values, onChange }) => {
 
   return (
     <div className={css.container}>
-      <label>Color background</label>
+      <label>Background color</label>
       <div style={{ display: "flex", justifyContent: "center" }}>
         <ColorSelector
           value={color}

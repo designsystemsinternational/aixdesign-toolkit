@@ -15,8 +15,8 @@ export const ColorSelector = ({
 }) => {
   return (
     <div className={css.root}>
-      {options.map(colorArray => (
-        <div className={css.row}>
+      {options.map((colorArray, optionsIndex) => (
+        <div className={css.row} key={optionsIndex}>
           {colorArray.map((color, index) => (
             <div
               key={index}
