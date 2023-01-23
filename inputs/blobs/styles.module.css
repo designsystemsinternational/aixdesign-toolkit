@@ -38,3 +38,15 @@
   fill: black;
   stroke-width: 0.5px;
 }
+
+.firstBlob {
+  border: 1px solid var(--mechanic-gray);
+  padding: 0.2em 0.5em;
+  border-radius: var(--mechanic-input-height-half);
+  font-family: var(--mechanic-input-font);
+  background: transparent;
+  display: block;
+  width: 100%;
+  margin-top: 8px;
+  cursor: pointer;
+}

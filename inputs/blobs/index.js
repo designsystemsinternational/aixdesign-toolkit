@@ -99,7 +99,9 @@ export const Input = ({ name, values, onChange }) => {
 
       <div className={css.blobContainer}>
         {blobs.length === 0 ? (
-          <p>No blobs loaded!</p>
+          <button className={css.firstBlob} onClick={() => setOpenModal(true)}>
+            Load your first blob
+          </button>
         ) : (
           blobs.map((blob, index) => (
             <BlobElementControl

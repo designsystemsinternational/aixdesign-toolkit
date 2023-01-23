@@ -12,7 +12,22 @@
   margin-top: 0;
 }
 
-.bookmarklet {
+.errorMessage {
+  margin-top: 0;
+  color: red;
+}
+
+.setupSection,
+.loadingSection {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+  & p {
+    line-height: 1.4;
+  }
+}
+
+.bookmarkletButton {
   background-color: #eaeaea;
   color: black;
   text-decoration: none;
@@ -23,19 +38,8 @@
     background-color: #dadada;
   }
   &:active {
-    background-color: #ff0;
+    background-color: #ffd;
   }
-}
-
-.errorMessage {
-  margin-top: 0;
-  color: red;
-}
-
-.setupSection,
-.loadingSection {
-  display: flex;
-  flex-direction: column;
 }
 
 .blobInput {

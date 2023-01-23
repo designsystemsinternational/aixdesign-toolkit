@@ -3,20 +3,11 @@ import React from "react";
 import { Button } from "@mechanic-design/ui-components";
 
 import { parseBlob } from "../utils/parse-blob.js";
-// import { bookmarkletCode } from "../utils/bookmarklet.js";
-import { bookmarkletCode } from "../utils/bookmarklet.new.js";
+import { bookmarkletCode } from "../utils/bookmarklet.js";
 import { ColorSelector } from "./ColorSelector";
 
 import * as css from "./BlobForm.module.css";
 import { colors } from "../../../identity/colors.js";
-
-const toolkitHelperCode = `<a
-target="_blank"
-rel="noopener noreferrer"
-href="https://storage.googleapis.com/openimages/web/visualizer/index.html?type=segmentation"
->
-Google Open Images Dataset
-</a>`;
 
 const FirstStep = ({ onNextStep, setLoadedObject }) => {
   const [inputValue, setInputValue] = React.useState("");
@@ -25,25 +16,34 @@ const FirstStep = ({ onNextStep, setLoadedObject }) => {
 
   return (
     <div className={css.setupSection}>
-      <h2>Use this bookmarklet to insert an Open Images blob</h2>
+      <h2>Use this bookmarklet to insert a blob from Open Images</h2>
       <p>
-        Add this bookmarklet to your browser by dragging the following link your
-        bookmarks. You only need to this step once.
+        Add the AIxDesign bookmarklet to your browser by dragging the following
+        link your bookmarks bar. You'll only need to do this step once.
       </p>
       <p>
-        <a className={css.bookmarklet} href={bookmarkletCode}>
+        <a className={css.bookmarkletButton} href={bookmarkletCode}>
           AIxDesign Toolkit helper
         </a>
       </p>
       <p>
         Then, go to{" "}
-        <span dangerouslySetInnerHTML={{ __html: toolkitHelperCode }} />, go
-        through the roaster, click to preview the blob you want to add, and
-        while on preview mode click on the bookmark helper.
+        <a
+          target="_blank"
+          rel="noopener noreferrer"
+          href="https://storage.googleapis.com/openimages/web/visualizer/index.html?type=segmentation"
+        >
+          Google Open Images Dataset
+        </a>{" "}
+        to find the image/blob you want to add. Click on a tile to open the
+        preview view, and then click on the bookmark helper to generate and grab
+        the svg blob.
       </p>
       <p>
-        Then copy over the blob code you'll get from the helper and press the
-        button:
+        The helper with generate a svg object from the preview and copy it to
+        your clipboard. <br />
+        After doing it, come back to this window to paste the code in the field
+        below and press <strong>Load blob</strong>
       </p>
       <textarea
         className={css.blobInput}
@@ -66,7 +66,7 @@ const FirstStep = ({ onNextStep, setLoadedObject }) => {
           }
         }}
       >
-        Load blob!
+        Load blob
       </Button>
     </div>
   );

@@ -30,11 +30,11 @@ javascript: (function () {
   modalContainer.appendChild(dialog);
 
   let textContent =
-    "Copy the text in the textarea below and paste it in the toolkit!";
+    " Copy the code in the textarea below and paste it in the toolkit.";
 
   if (!pathSvgString) {
     textContent =
-      "Couldn't detect a blob preview. Make sure you click on the blob before calling the helper!";
+      "Couldn't detect a blob preview. Make sure you click on the blob before calling the helper.";
   } else if (canCopyConClipboard) {
     navigator.clipboard.writeText(svgString);
     textContent =
@@ -49,16 +49,16 @@ javascript: (function () {
   if (pathSvgString) {
     const copyInstructions = document.createElement("p");
     copyInstructions.textContent =
-      "If you want to copy it again, you can get it from the textarea below. Just triple click and copy.";
+      "If you want to copy it again, you can get it from the textarea below. Just click to select all and copy.";
     copyInstructions.style = "margin: 1em 0; font-size: smaller;";
     dialog.appendChild(copyInstructions);
 
     const textarea = document.createElement("textarea");
-    textarea.onclick = "this.focus();this.select()";
+    textarea.setAttribute("onclick", "this.focus();this.select()");
     textarea.readOnly = true;
     textarea.value = svgString;
-    textarea.rows = 1;
-    textarea.style = "font-size: smaller; resize: none;";
+    textarea.rows = 3;
+    textarea.style = "font-family:monospace;font-size:smaller;resize:none;";
     dialog.appendChild(textarea);
   }
 
