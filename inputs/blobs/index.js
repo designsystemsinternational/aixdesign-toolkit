@@ -53,6 +53,10 @@ export const Input = ({ name, values, onChange }) => {
     }
     onChange(null, name, { blobs: copy, selected: newSelected });
   };
+  const modifyBlob = (index, newBlob) => {
+    blobs[index] = { ...blobs[index], ...newBlob };
+    onChange(null, name, { blobs, selected });
+  };
   const removeBlob = index => {
     const filteredBlobs = blobs.filter((_, idx) => idx != index);
     let newSelected = selected;
