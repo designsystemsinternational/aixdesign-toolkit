@@ -13,6 +13,12 @@ import {
 import "../../assets/fonts.css";
 import * as css from "./styles.module.css";
 
+const KEYS = {
+  UP: 38,
+  DOWN: 40,
+  DELETE: 8
+};
+
 export const initValue = input => ({ blobs: [], selected: -1 });
 
 export const prepareValue = (value, input) => {
@@ -40,9 +46,10 @@ export const Input = ({ name, values, onChange }) => {
     let newSelected = selected;
     if (selected === index1) {
       newSelected = index2;
-    }
-    if (selected === index2) {
+    } else if (selected === index2) {
       newSelected = index1;
+    } else {
+      newSelected = index2;
     }
     onChange(null, name, { blobs: copy, selected: newSelected });
   };
@@ -61,6 +68,28 @@ export const Input = ({ name, values, onChange }) => {
     mainRef.current = document.getElementsByClassName("App-module__main")[0];
     mainRef.current.style = "position: relative;";
   }, []);
+
+  const inputRef = React.useRef(null);
+  React.useEffect(() => {
+    if (!inputRef.current) return;
+    const handleKeydown = evt => {
+      if (Object.values(KEYS).includes(evt.keyCode) && selected > -1) {
+        evt.preventDefault();
+        evt.stopPropagation();
+        if (evt.keyCode == KEYS.UP) {
+          moveBlob(selected, selected - 1);
+        } else if (evt.keyCode == KEYS.DOWN) {
+          moveBlob(selected, selected + 1);
+        } else if (evt.keyCode == KEYS.DELETE) {
+          removeBlob(selected);
+        }
+      }
+    };
+    inputRef.current.addEventListener("keydown", handleKeydown);
+    return () => {
+      inputRef.current.removeEventListener("keydown", handleKeydown);
+    };
+  }, [inputRef, selected]);
 
   let width = values.width;
   let height = values.height;
@@ -97,7 +126,7 @@ export const Input = ({ name, values, onChange }) => {
         </button>
       </div>
 
-      <div className={css.blobContainer}>
+      <div className={css.blobContainer} ref={inputRef} tabIndex="-1">
         {blobs.length === 0 ? (
           <button className={css.firstBlob} onClick={() => setOpenModal(true)}>
             Load your first blob

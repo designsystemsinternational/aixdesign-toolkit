@@ -1,4 +1,5 @@
 import React from "react";
+import cn from "classnames";
 
 import * as css from "./BlobElementControl.module.css";
 
@@ -20,11 +21,11 @@ export const BlobElementControl = ({
     fill,
     svgData: { viewBox }
   } = blob;
+
   return (
     <div
-      className={css.blobElement}
+      className={cn(css.blobElement, { [css.selected]: selected })}
       key={index}
-      style={{ background: selected ? "#efefef" : "transparent" }}
       onClick={onClick}
     >
       <div className={css.blobControlContainer}>

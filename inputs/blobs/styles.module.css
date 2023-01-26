@@ -18,6 +18,7 @@
 
 .blobContainer {
   margin-bottom: 1em;
+  outline: none;
 }
 
 .newBlob {
