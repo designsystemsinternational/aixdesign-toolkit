@@ -3,6 +3,7 @@ import cn from "classnames";
 
 import * as css from "./BlobElementControl.module.css";
 import { ArrowDown, ArrowUp, Remove } from "./Icons";
+import { ColorSelector } from "./ColorSelector";
 
 // Icons from http://svgicons.sparkk.fr/
 
@@ -13,6 +14,7 @@ export const BlobElementControl = ({
   onMoveUp,
   onMoveDown,
   onRemove,
+  onModify,
   onClick,
   disableMoveUp,
   disableMoveDown
@@ -20,6 +22,8 @@ export const BlobElementControl = ({
   const {
     path,
     fill,
+    stroke,
+    strokeWidth,
     svgData: { viewBox }
   } = blob;
 
@@ -67,7 +71,11 @@ export const BlobElementControl = ({
           <Remove />
         </button>
       </div>
-      {selected && <div className={css.extras}>EXTRA SHIT</div>}
+      {selected && (
+        <div className={css.extras}>
+          <ColorSelector value={fill} onChange={c => onModify({ fill: c })} />
+        </div>
+      )}
     </div>
   );
 };

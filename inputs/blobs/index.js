@@ -51,11 +51,13 @@ export const Input = ({ name, values, onChange }) => {
     } else {
       newSelected = index2;
     }
+    console.log(name, copy);
     onChange(null, name, { blobs: copy, selected: newSelected });
   };
   const modifyBlob = (index, newBlob) => {
-    blobs[index] = { ...blobs[index], ...newBlob };
-    onChange(null, name, { blobs, selected });
+    const copy = [...blobs];
+    copy[index] = { ...copy[index], ...newBlob, stroke: "#000000" };
+    onChange(null, name, { blobs: copy, selected });
   };
   const removeBlob = index => {
     const filteredBlobs = blobs.filter((_, idx) => idx != index);
@@ -147,6 +149,7 @@ export const Input = ({ name, values, onChange }) => {
               onMoveUp={() => moveBlob(index, index - 1)}
               onMoveDown={() => moveBlob(index, index + 1)}
               onRemove={() => removeBlob(index)}
+              onModify={newBlob => modifyBlob(index, newBlob)}
             />
           ))
         )}
