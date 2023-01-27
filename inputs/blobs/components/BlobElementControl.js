@@ -73,7 +73,13 @@ export const BlobElementControl = ({
       </div>
       {selected && (
         <div className={css.extras}>
+          <h5>fill</h5>
           <ColorSelector value={fill} onChange={c => onModify({ fill: c })} />
+          <h5>stroke</h5>
+          <ColorSelector
+            value={stroke}
+            onChange={c => onModify({ stroke: c })}
+          />
         </div>
       )}
     </div>

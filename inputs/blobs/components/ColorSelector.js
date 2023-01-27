@@ -13,6 +13,10 @@ export const ColorSelector = ({
   options = colorOptions,
   size = 30
 }) => {
+  const handleChange = (e, color) => {
+    e.stopPropagation();
+    onChange(color);
+  };
   return (
     <div className={css.root}>
       {options.map((colorArray, optionsIndex) => (
@@ -21,7 +25,7 @@ export const ColorSelector = ({
             <div
               key={index}
               className={cn(css.color, { [css.selected]: value === color })}
-              onClick={() => onChange(color)}
+              onClick={e => handleChange(e, color)}
               style={{ height: size, background: color }}
             />
           ))}

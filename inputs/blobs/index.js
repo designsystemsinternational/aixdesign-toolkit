@@ -56,7 +56,7 @@ export const Input = ({ name, values, onChange }) => {
   };
   const modifyBlob = (index, newBlob) => {
     const copy = [...blobs];
-    copy[index] = { ...copy[index], ...newBlob, stroke: "#000000" };
+    copy[index] = { ...copy[index], ...newBlob };
     onChange(null, name, { blobs: copy, selected });
   };
   const removeBlob = index => {
