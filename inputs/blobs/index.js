@@ -124,7 +124,7 @@ export const Input = ({ name, values, onChange }) => {
 
   return (
     <div className={css.container}>
-      <label>Blob background</label>
+      <label>Blobs</label>
       <div className={css.newBlobContainer}>
         <button className={css.newBlob} onClick={() => setOpenModal(true)}>
           <svg viewBox="0 0 20 20" width={20}>
