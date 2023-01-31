@@ -18,7 +18,6 @@ export const ColorSelector = ({
     onChange(color);
     setSelected(false);
   };
-  console.log(size);
 
   const [selected, setSelected] = React.useState();
 

@@ -21,11 +21,15 @@ const FirstStep = ({ onNextStep, setLoadedObject }) => {
         Add the AIxDesign bookmarklet to your browser by dragging the following
         link your bookmarks bar. You'll only need to do this step once.
       </p>
-      <p>
-        <a className={css.bookmarkletButton} href={bookmarkletCode}>
-          AIxDesign Toolkit helper
-        </a>
-      </p>
+
+      <p
+        dangerouslySetInnerHTML={{
+          __html: `<a class="${css.bookmarkletButton}" href="${encodeURI(
+            bookmarkletCode
+          )}">AIxDesign Toolkit helper</a>`
+        }}
+      />
+
       <p>
         Then, go to{" "}
         <a
