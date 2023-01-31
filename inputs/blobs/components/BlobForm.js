@@ -80,7 +80,7 @@ const SecondStep = ({
 }) => {
   const [fill, setFill] = React.useState(colors.brighter[0]);
   const [stroke, setStroke] = React.useState(colors.darker[0]);
-
+  const [strokeWidth, setStrokeWidth] = React.useState(2);
   return (
     <div className={css.loadingSection}>
       <Button
@@ -164,7 +164,7 @@ const SecondStep = ({
 
       <Button
         onClick={() => {
-          onLoadBlob({ ...loadedObject, fill, stroke });
+          onLoadBlob({ ...loadedObject, fill, stroke, strokeWidth });
           setLoadedObject(null);
           onPreviousStep();
         }}

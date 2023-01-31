@@ -16,21 +16,34 @@ export const ColorSelector = ({
   const handleChange = (e, color) => {
     e.stopPropagation();
     onChange(color);
+    setSelected(false);
   };
+  console.log(size);
+
+  const [selected, setSelected] = React.useState();
+
   return (
     <div className={css.root}>
-      {options.map((colorArray, optionsIndex) => (
-        <div className={css.row} key={optionsIndex}>
-          {colorArray.map((color, index) => (
-            <div
-              key={index}
-              className={cn(css.color, { [css.selected]: value === color })}
-              onClick={e => handleChange(e, color)}
-              style={{ height: size, background: color }}
-            />
-          ))}
-        </div>
-      ))}
+      {selected ? (
+        options.map((colorArray, optionsIndex) => (
+          <div className={css.row} key={optionsIndex}>
+            {colorArray.map((color, index) => (
+              <div
+                key={index}
+                className={cn(css.color, { [css.selected]: value === color })}
+                onClick={e => handleChange(e, color)}
+                style={{ height: size, background: color }}
+              />
+            ))}
+          </div>
+        ))
+      ) : (
+        <div
+          className={css.color}
+          onClick={e => setSelected(true)}
+          style={{ height: 40, borderRadius: 20, background: value }}
+        />
+      )}
     </div>
   );
 };

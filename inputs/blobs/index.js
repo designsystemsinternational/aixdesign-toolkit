@@ -79,7 +79,11 @@ export const Input = ({ name, values, onChange }) => {
   React.useEffect(() => {
     if (!inputRef.current) return;
     const handleKeydown = evt => {
-      if (Object.values(KEYS).includes(evt.keyCode) && selected > -1) {
+      if (
+        Object.values(KEYS).includes(evt.keyCode) &&
+        selected > -1 &&
+        "INPUT" !== evt.target.tagName
+      ) {
         evt.preventDefault();
         evt.stopPropagation();
         if (evt.keyCode == KEYS.UP) {
@@ -91,6 +95,7 @@ export const Input = ({ name, values, onChange }) => {
         }
       }
     };
+
     inputRef.current.addEventListener("keydown", handleKeydown);
     return () => {
       inputRef.current.removeEventListener("keydown", handleKeydown);

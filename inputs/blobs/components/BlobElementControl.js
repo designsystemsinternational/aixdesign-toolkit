@@ -4,7 +4,8 @@ import cn from "classnames";
 import * as css from "./BlobElementControl.module.css";
 import { ArrowDown, ArrowUp, Remove } from "./Icons";
 import { ColorSelector } from "./ColorSelector";
-
+import { NumberInput } from "@mechanic-design/ui-components";
+import { Logo } from "../../../functions/igpost/Logo";
 // Icons from http://svgicons.sparkk.fr/
 
 export const BlobElementControl = ({
@@ -72,10 +73,20 @@ export const BlobElementControl = ({
         </button>
       </div>
       {selected && (
-        <div className={css.extras}>
-          <h5>fill</h5>
+        <div className={css.extras} onClick={e => e.stopPropagation()}>
+          <h5>Fill</h5>
           <ColorSelector value={fill} onChange={c => onModify({ fill: c })} />
-          <h5>stroke</h5>
+          <h5>Stroke</h5>
+          <NumberInput
+            value={strokeWidth}
+            min={1}
+            max={10}
+            step={1}
+            slider
+            onChange={e => {
+              onModify({ strokeWidth: parseInt(e.target.value) });
+            }}
+          />
           <ColorSelector
             value={stroke}
             onChange={c => onModify({ stroke: c })}
