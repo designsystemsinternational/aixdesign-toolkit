@@ -16,20 +16,15 @@
 }
 
 .selected {
-  /* border-width: 3px; */
-
   position: relative;
   overflow: hidden;
 
   &:after {
     position: absolute;
     border-radius: 50%;
-
     width: 8px;
     height: 8px;
-    /* background-color: black; */
     border: 1px solid black;
-    background-blend-mode: difference;
     content: "";
     left: 50%;
     top: 50%;
