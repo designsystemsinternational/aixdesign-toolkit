@@ -1,4 +1,5 @@
 import React from "react";
+// Icons from http://svgicons.sparkk.fr/
 
 export const ArrowUp = () => (
   <svg viewBox="0 0 20 20" width={20}>

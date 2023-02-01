@@ -6,7 +6,6 @@ import { ArrowDown, ArrowUp, Remove } from "./Icons";
 import { ColorSelector } from "./ColorSelector";
 import { NumberInput } from "@mechanic-design/ui-components";
 import { Logo } from "../../../functions/igpost/Logo";
-// Icons from http://svgicons.sparkk.fr/
 
 export const BlobElementControl = ({
   blob,
