@@ -1,6 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 
+import { Button } from "@mechanic-design/ui-components";
 import { Modal } from "./components/Modal";
 import { BlobForm } from "./components/BlobForm";
 import { BlobElementControl } from "./components/BlobElementControl";
@@ -139,9 +140,9 @@ export const Input = ({ name, values, onChange }) => {
 
       <div className={css.blobContainer} ref={inputRef} tabIndex="-1">
         {blobs.length === 0 ? (
-          <button className={css.firstBlob} onClick={() => setOpenModal(true)}>
+          <Button className={css.firstBlob} onClick={() => setOpenModal(true)}>
             Load your first blob
-          </button>
+          </Button>
         ) : (
           blobs.map((blob, index) => (
             <BlobElementControl
