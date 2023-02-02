@@ -3,6 +3,7 @@
   cursor: pointer;
   &.selected {
     background-color: #efefef;
+    border-radius: var(--mechanic-input-height-quart);
   }
 }
 .main {
@@ -39,7 +40,11 @@
 
 .blobSvg {
   height: 60px;
-  border: 1px solid black;
+  border: 1px solid #aaa;
+}
+
+.selected .blobSvg {
+  border-color: #666;
 }
 
 .extras {

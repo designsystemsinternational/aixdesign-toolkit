@@ -59,7 +59,12 @@ export const BlobElementControl = ({
         </div>
         <div style={{ flex: "1" }}></div>
         <svg className={css.blobSvg} viewBox={viewBox}>
-          <path d={path} fill={fill} />
+          <path
+            d={path}
+            fill={fill}
+            stroke={stroke}
+            strokeWidth={strokeWidth}
+          />
         </svg>
         <button
           className={css.blobControl}
