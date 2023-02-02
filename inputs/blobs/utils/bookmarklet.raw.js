@@ -5,6 +5,7 @@ javascript: (function () {
 
   if (window.location.href.split("?")[0] !== openimagesUrl.split("?")[0]) {
     window.open(openimagesUrl, "_blank");
+    return;
   }
 
   const svgString = document.getElementById("viewer_svg").outerHTML;
