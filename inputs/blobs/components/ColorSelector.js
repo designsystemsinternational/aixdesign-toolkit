@@ -41,7 +41,9 @@ export const ColorSelector = ({
           className={css.color}
           onClick={e => setSelected(true)}
           style={{ height: 40, borderRadius: 20, background: value }}
-        />
+        >
+          {value}
+        </div>
       )}
     </div>
   );

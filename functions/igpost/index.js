@@ -63,7 +63,6 @@ export const handler = ({ inputs, mechanic }) => {
       : grid.rows[2];
   const logoSize =
     showImage && imageSize > 2 ? logoSizeSmall(size) : logoSizeLarge(size);
-  console.log(_ratio);
   return (
     <div className={css.root} style={{ width: width, height: height }}>
       <svg className={css.background} width={width} height={height}>

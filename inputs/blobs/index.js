@@ -29,7 +29,7 @@ export const prepareValue = (value, input) => {
 
 export const Input = ({ name, values, onChange }) => {
   const { blobs, selected } = values[name] ?? { blobs: [], selected: -1 };
-
+  const reversedBlobs = [...blobs].reverse();
   const [openModal, setOpenModal] = React.useState(false);
 
   const selectBlob = index => {

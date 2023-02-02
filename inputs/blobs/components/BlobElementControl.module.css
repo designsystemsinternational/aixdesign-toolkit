@@ -50,6 +50,13 @@
 .extras {
 }
 
+.groupTitle {
+  padding-top: var(--mechanic-input-height-half);
+}
+
+.strokeWidthInput {
+  margin-bottom: var(--mechanic-input-height-quart);
+}
 .move {
 }
 

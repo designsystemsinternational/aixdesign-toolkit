@@ -4,6 +4,7 @@
 
 .row {
   display: flex;
+  padding-bottom: 2px;
 }
 
 .color {
@@ -14,6 +15,10 @@
   border-width: 1px;
   border-color: black;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding-left: var(--mechanic-input-height-quart);
+  font-size: 0.75rem;
 }
 
 .selected {

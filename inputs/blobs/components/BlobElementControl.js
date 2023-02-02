@@ -78,10 +78,11 @@ export const BlobElementControl = ({
       </div>
       {selected && (
         <div className={css.extras} onClick={e => e.stopPropagation()}>
-          <h5>Fill</h5>
+          <label className={css.groupTitle}>Fill</label>
           <ColorSelector value={fill} onChange={c => onModify({ fill: c })} />
-          <h5>Stroke</h5>
+          <label className={css.groupTitle}>Stroke</label>
           <NumberInput
+            className={css.strokeWidthInput}
             value={strokeWidth}
             min={1}
             max={10}
