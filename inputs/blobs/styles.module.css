@@ -19,6 +19,8 @@
 .blobContainer {
   margin-bottom: 1em;
   outline: none;
+  display: flex;
+  flex-direction: column-reverse;
 }
 
 .newBlob {

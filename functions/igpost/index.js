@@ -38,8 +38,8 @@ export const handler = ({ inputs, mechanic }) => {
     showBlobPictures
   } = inputs;
 
-  let { blobs, selected: selectedBlob } = blobBackground;
-  blobs = [...blobs].reverse();
+  const { blobs, selected: selectedBlob } = blobBackground;
+
   const hideText = showBlobPictures || selectedBlob >= 0;
 
   const imageSrc = useSrcImage(image, mechanic);

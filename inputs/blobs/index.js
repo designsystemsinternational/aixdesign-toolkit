@@ -139,11 +139,11 @@ export const Input = ({ name, values, onChange }) => {
               key={index}
               selected={index === selected}
               blob={blob}
-              disableMoveUp={index === 0}
-              disableMoveDown={index === blobs.length - 1}
+              disableMoveUp={index === blobs.length - 1}
+              disableMoveDown={index === 0}
               onClick={() => selectBlob(index)}
-              onMoveUp={() => moveBlob(index, index - 1)}
-              onMoveDown={() => moveBlob(index, index + 1)}
+              onMoveUp={() => moveBlob(index, index + 1)}
+              onMoveDown={() => moveBlob(index, index - 1)}
               onRemove={() => removeBlob(index)}
               onModify={newBlob => modifyBlob(index, newBlob)}
             />
