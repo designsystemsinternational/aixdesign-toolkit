@@ -29,7 +29,6 @@ export const prepareValue = (value, input) => {
 
 export const Input = ({ name, values, onChange }) => {
   const { blobs, selected } = values[name] ?? { blobs: [], selected: -1 };
-  const reversedBlobs = [...blobs].reverse();
   const [openModal, setOpenModal] = React.useState(false);
 
   const selectBlob = index => {
@@ -46,15 +45,25 @@ export const Input = ({ name, values, onChange }) => {
     copy[index1] = copy[index2];
     copy[index2] = aux;
 
-    const newSelected = selected === index2 ? index1 : index2;
+    const newSelected = index2;
+
+    console.log(
+      "moving from %s to %s | selected %s -> %s",
+      index1,
+      index2,
+      selected,
+      newSelected
+    );
 
     onChange(null, name, { blobs: copy, selected: newSelected });
   };
+
   const modifyBlob = (index, newBlob) => {
     const copy = [...blobs];
     copy[index] = { ...copy[index], ...newBlob };
     onChange(null, name, { blobs: copy, selected });
   };
+
   const removeBlob = index => {
     const filteredBlobs = blobs.filter((_, idx) => idx != index);
     let newSelected = selected;
@@ -83,9 +92,9 @@ export const Input = ({ name, values, onChange }) => {
         evt.preventDefault();
         evt.stopPropagation();
         if (evt.keyCode == KEYS.UP) {
-          moveBlob(selected, selected - 1);
-        } else if (evt.keyCode == KEYS.DOWN) {
           moveBlob(selected, selected + 1);
+        } else if (evt.keyCode == KEYS.DOWN) {
+          moveBlob(selected, selected - 1);
         } else if (evt.keyCode == KEYS.DELETE) {
           removeBlob(selected);
         }
@@ -142,8 +151,8 @@ export const Input = ({ name, values, onChange }) => {
               disableMoveUp={index === blobs.length - 1}
               disableMoveDown={index === 0}
               onClick={() => selectBlob(index)}
-              onMoveUp={() => moveBlob(index, index + 1)}
-              onMoveDown={() => moveBlob(index, index - 1)}
+              onMoveUp={() => moveBlob(index, index + 1, 1)}
+              onMoveDown={() => moveBlob(index, index - 1, 1)}
               onRemove={() => removeBlob(index)}
               onModify={newBlob => modifyBlob(index, newBlob)}
             />
