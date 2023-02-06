@@ -2,10 +2,11 @@
   "name": "aixdesign-toolkit",
   "version": "0.0.0",
   "scripts": {
-    "dev": "mechanic dev",
-    "build": "mechanic build",
+    "dev": "npm run bookmarklet && mechanic dev",
+    "build": "npm run bookmarklet && mechanic build",
     "serve": "mechanic serve",
-    "new": "mechanic new function"
+    "new": "mechanic new function",
+    "bookmarklet": "node scripts/prepareBookmarklet.mjs"
   },
   "devDependencies": {
     "@mechanic-design/cli": "^2.0.0-beta.9",

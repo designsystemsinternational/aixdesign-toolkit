@@ -18,12 +18,15 @@
 
 .blobContainer {
   margin-bottom: 1em;
+  outline: none;
+  display: flex;
+  flex-direction: column-reverse;
 }
 
 .newBlob {
   position: absolute;
   top: 1em;
-  right: 1em;
+  right: 0.5em;
 
   border: none;
   padding: 0.2em 0.5em;
@@ -37,4 +40,8 @@
   stroke: black;
   fill: black;
   stroke-width: 0.5px;
+}
+
+.firstBlob {
+  margin-top: 8px;
 }

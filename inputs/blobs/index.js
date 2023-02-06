@@ -1,6 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 
+import { Button } from "@mechanic-design/ui-components";
 import { Modal } from "./components/Modal";
 import { BlobForm } from "./components/BlobForm";
 import { BlobElementControl } from "./components/BlobElementControl";
@@ -12,6 +13,13 @@ import {
 
 import "../../assets/fonts.css";
 import * as css from "./styles.module.css";
+import { Add } from "./components/Icons";
+
+const KEYS = {
+  UP: 38,
+  DOWN: 40,
+  DELETE: 8
+};
 
 export const initValue = input => ({ blobs: [], selected: -1 });
 
@@ -21,7 +29,6 @@ export const prepareValue = (value, input) => {
 
 export const Input = ({ name, values, onChange }) => {
   const { blobs, selected } = values[name] ?? { blobs: [], selected: -1 };
-
   const [openModal, setOpenModal] = React.useState(false);
 
   const selectBlob = index => {
@@ -37,15 +44,16 @@ export const Input = ({ name, values, onChange }) => {
     const aux = copy[index1];
     copy[index1] = copy[index2];
     copy[index2] = aux;
-    let newSelected = selected;
-    if (selected === index1) {
-      newSelected = index2;
-    }
-    if (selected === index2) {
-      newSelected = index1;
-    }
-    onChange(null, name, { blobs: copy, selected: newSelected });
+
+    onChange(null, name, { blobs: copy, selected: index2 });
   };
+
+  const modifyBlob = (index, newBlob) => {
+    const copy = [...blobs];
+    copy[index] = { ...copy[index], ...newBlob };
+    onChange(null, name, { blobs: copy, selected });
+  };
+
   const removeBlob = index => {
     const filteredBlobs = blobs.filter((_, idx) => idx != index);
     let newSelected = selected;
@@ -61,6 +69,34 @@ export const Input = ({ name, values, onChange }) => {
     mainRef.current = document.getElementsByClassName("App-module__main")[0];
     mainRef.current.style = "position: relative;";
   }, []);
+
+  const inputRef = React.useRef(null);
+  React.useEffect(() => {
+    if (!inputRef.current) return;
+    const handleKeydown = evt => {
+      if (
+        Object.values(KEYS).includes(evt.keyCode) &&
+        selected > -1 &&
+        "INPUT" !== evt.target.tagName
+      ) {
+        evt.preventDefault();
+        evt.stopPropagation();
+        if (evt.keyCode == KEYS.UP) {
+          moveBlob(selected, selected + 1);
+        } else if (evt.keyCode == KEYS.DOWN) {
+          moveBlob(selected, selected - 1);
+        } else if (evt.keyCode == KEYS.DELETE) {
+          removeBlob(selected);
+        }
+      }
+    };
+
+    inputRef.current.addEventListener("keydown", handleKeydown);
+    return () => {
+      inputRef.current &&
+        inputRef.current.removeEventListener("keydown", handleKeydown);
+    };
+  }, [inputRef, selected]);
 
   let width = values.width;
   let height = values.height;
@@ -84,34 +120,31 @@ export const Input = ({ name, values, onChange }) => {
 
   return (
     <div className={css.container}>
-      <label>Blob background</label>
+      <label>Blobs</label>
       <div className={css.newBlobContainer}>
         <button className={css.newBlob} onClick={() => setOpenModal(true)}>
-          <svg viewBox="0 0 20 20" width={20}>
-            <path d="M14.776,10c0,0.239-0.195,0.434-0.435,0.434H5.658c-0.239,0-0.434-0.195-0.434-0.434s0.195-0.434,0.434-0.434h8.684C14.581,9.566,14.776,9.762,14.776,10 M18.25,10c0,4.558-3.693,8.25-8.25,8.25c-4.557,0-8.25-3.691-8.25-8.25c0-4.557,3.693-8.25,8.25-8.25C14.557,1.75,18.25,5.443,18.25,10 M17.382,10c0-4.071-3.312-7.381-7.382-7.381C5.929,2.619,2.619,5.93,2.619,10c0,4.07,3.311,7.382,7.381,7.382C14.07,17.383,17.382,14.07,17.382,10"></path>
-            <path
-              transform="rotate(90 10 10)"
-              d="M14.776,10c0,0.239-0.195,0.434-0.435,0.434H5.658c-0.239,0-0.434-0.195-0.434-0.434s0.195-0.434,0.434-0.434h8.684C14.581,9.566,14.776,9.762,14.776,10 M18.25,10c0,4.558-3.693,8.25-8.25,8.25c-4.557,0-8.25-3.691-8.25-8.25c0-4.557,3.693-8.25,8.25-8.25C14.557,1.75,18.25,5.443,18.25,10 M17.382,10c0-4.071-3.312-7.381-7.382-7.381C5.929,2.619,2.619,5.93,2.619,10c0,4.07,3.311,7.382,7.381,7.382C14.07,17.383,17.382,14.07,17.382,10"
-            ></path>
-          </svg>
+          <Add />
         </button>
       </div>
 
-      <div className={css.blobContainer}>
+      <div className={css.blobContainer} ref={inputRef} tabIndex="-1">
         {blobs.length === 0 ? (
-          <p>No blobs loaded!</p>
+          <Button className={css.firstBlob} onClick={() => setOpenModal(true)}>
+            Load your first blob
+          </Button>
         ) : (
           blobs.map((blob, index) => (
             <BlobElementControl
               key={index}
               selected={index === selected}
               blob={blob}
-              disableMoveUp={index === 0}
-              disableMoveDown={index === blobs.length - 1}
+              disableMoveUp={index === blobs.length - 1}
+              disableMoveDown={index === 0}
               onClick={() => selectBlob(index)}
-              onMoveUp={() => moveBlob(index, index - 1)}
-              onMoveDown={() => moveBlob(index, index + 1)}
+              onMoveUp={() => moveBlob(index, index + 1, 1)}
+              onMoveDown={() => moveBlob(index, index - 1, 1)}
               onRemove={() => removeBlob(index)}
+              onModify={newBlob => modifyBlob(index, newBlob)}
             />
           ))
         )}

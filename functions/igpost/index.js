@@ -63,36 +63,39 @@ export const handler = ({ inputs, mechanic }) => {
       : grid.rows[2];
   const logoSize =
     showImage && imageSize > 2 ? logoSizeSmall(size) : logoSizeLarge(size);
-
   return (
     <div className={css.root} style={{ width: width, height: height }}>
       <svg className={css.background} width={width} height={height}>
         <rect width={width} height={height} fill={backgroundColor} />
         <g transform={`scale(${_ratio})`}>
-          {blobs.map(({ path, fill, stroke, href, transform }, index) =>
-            !showBlobPictures ? (
-              <path
-                key={index}
-                d={path}
-                fill={fill}
-                stroke={stroke}
-                strokeWidth={2}
-                transform={transform}
-              />
-            ) : (
-              <React.Fragment key={index}>
-                <defs>
-                  <clipPath id={`clip-${index}`}>
-                    <path d={path} />
-                  </clipPath>
-                </defs>
-                <image
-                  xlinkHref={href}
-                  clipPath={`url(#clip-${index})`}
+          {blobs.map(
+            ({ path, fill, stroke, strokeWidth = 2, href, transform }, index) =>
+              // non-scaling-stroke prevents the stroke to change with the transforms
+              // https://www.w3.org/TR/SVGTiny12/painting.html#NonScalingStroke
+              !showBlobPictures ? (
+                <path
+                  key={index}
+                  vectorEffect="non-scaling-stroke"
+                  d={path}
+                  fill={fill}
+                  stroke={stroke}
+                  strokeWidth={strokeWidth * _ratio}
                   transform={transform}
                 />
-              </React.Fragment>
-            )
+              ) : (
+                <React.Fragment key={index}>
+                  <defs>
+                    <clipPath id={`clip-${index}`}>
+                      <path d={path} />
+                    </clipPath>
+                  </defs>
+                  <image
+                    xlinkHref={href}
+                    clipPath={`url(#clip-${index})`}
+                    transform={transform}
+                  />
+                </React.Fragment>
+              )
           )}
         </g>
       </svg>

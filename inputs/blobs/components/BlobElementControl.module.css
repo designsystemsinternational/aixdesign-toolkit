@@ -1,11 +1,15 @@
-
-
 .blobElement {
+  padding: 0.5em;
+  cursor: pointer;
+  &.selected {
+    background-color: #efefef;
+    border-radius: var(--mechanic-input-height-quart);
+  }
+}
+.main {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.5em;
-  cursor: pointer;
 }
 
 .blobControlContainer {
@@ -36,5 +40,25 @@
 
 .blobSvg {
   height: 60px;
-  border: 1px solid black;
+  border: 1px solid #aaa;
+}
+
+.selected .blobSvg {
+  border-color: #666;
+}
+
+.extras {
+}
+
+.groupTitle {
+  padding-top: var(--mechanic-input-height-half);
+}
+
+.strokeWidthInput {
+  margin-bottom: var(--mechanic-input-height-quart);
+}
+.move {
+}
+
+.strokeInput {
 }
