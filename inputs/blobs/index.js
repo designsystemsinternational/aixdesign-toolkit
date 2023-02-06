@@ -45,17 +45,7 @@ export const Input = ({ name, values, onChange }) => {
     copy[index1] = copy[index2];
     copy[index2] = aux;
 
-    const newSelected = index2;
-
-    console.log(
-      "moving from %s to %s | selected %s -> %s",
-      index1,
-      index2,
-      selected,
-      newSelected
-    );
-
-    onChange(null, name, { blobs: copy, selected: newSelected });
+    onChange(null, name, { blobs: copy, selected: index2 });
   };
 
   const modifyBlob = (index, newBlob) => {
