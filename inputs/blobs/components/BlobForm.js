@@ -83,7 +83,7 @@ const SecondStep = ({
   onLoadBlob
 }) => {
   const [fill, setFill] = React.useState(colors.brighter[0]);
-  const [stroke, setStroke] = React.useState(colors.darker[0]);
+  const [stroke, setStroke] = React.useState(colors.original[0]);
   const [strokeWidth, setStrokeWidth] = React.useState(2);
   return (
     <div className={css.loadingSection}>

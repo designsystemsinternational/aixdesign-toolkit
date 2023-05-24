@@ -5,7 +5,7 @@ import * as css from "./ColorSelector.module.css";
 
 import { colors } from "../../../identity/colors";
 
-const colorOptions = [colors.brighter, colors.original, colors.darker];
+const colorOptions = [colors.brighter, colors.original];
 
 export const ColorSelector = ({
   value,
