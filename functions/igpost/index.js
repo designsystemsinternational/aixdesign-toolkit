@@ -10,8 +10,8 @@ const baseSizeReference = 816;
 const getSize = (size, reference) => (size * reference) / baseSizeReference;
 const titleSizeLarge = size => getSize(size, 77);
 const titleSizeSmall = size => getSize(size, 54);
-const logoSizeLarge = size => getSize(size, 35);
-const logoSizeSmall = size => getSize(size, 24);
+// const logoSizeLarge = size => getSize(size, 35);
+// const logoSizeSmall = size => getSize(size, 24);
 const dateSize = size => getSize(size, 18);
 
 export const handler = ({ inputs, mechanic }) => {
@@ -61,8 +61,8 @@ export const handler = ({ inputs, mechanic }) => {
     showImage && imageSize > 2 && ["top", "bottom"].includes(imagePosition)
       ? grid.rows[1]
       : grid.rows[2];
-  const logoSize =
-    showImage && imageSize > 2 ? logoSizeSmall(size) : logoSizeLarge(size);
+  // const logoSize =
+  //   showImage && imageSize > 2 ? logoSizeSmall(size) : logoSizeLarge(size);
   return (
     <div className={css.root} style={{ width: width, height: height }}>
       <svg className={css.background} width={width} height={height}>
@@ -161,7 +161,7 @@ export const handler = ({ inputs, mechanic }) => {
             {schedule.toUpperCase()}
           </div>
 
-          <Logo size={logoSize} top={grid.bottom} left={grid.right} />
+          {/* <Logo size={logoSize} top={grid.bottom} left={grid.right} /> */}
         </div>
       )}
     </div>
